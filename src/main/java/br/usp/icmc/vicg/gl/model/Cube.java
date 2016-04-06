@@ -5,6 +5,7 @@
  */
 package br.usp.icmc.vicg.gl.model;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 /**

@@ -924,4 +924,8 @@ public class JWavefrontObject {
       groups.get(i).dump();
     }
   }
+
+    public void bind() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

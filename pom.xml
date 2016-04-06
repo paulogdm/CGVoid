@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>br.usp.icmc.vicg.gl</groupId>
-  <artifactId>SS</artifactId>
-  <name>SpaceSample</name>
+  <artifactId>cg2014</artifactId>
+  <name>CG2014</name>
   <packaging>jar</packaging>
   <version>1.0</version>
 

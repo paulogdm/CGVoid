@@ -10,10 +10,9 @@ package br.usp.icmc.vicg.gl.util;
  */
 public class ShaderFactory {
 
-  public enum ShaderType {
+    public enum ShaderType {
 
     SIMPLE_SHADER,
-    SIMPLE_COLOR_SHADER,
     TRANSFORM_SHADER,
     MODEL_MATRIX_SHADER,
     MODEL_PROJECTION_MATRIX_SHADER,
@@ -21,14 +20,12 @@ public class ShaderFactory {
     LIGHT_SHADER,
     TEXTURE_SHADER,
     NORMALMAP_SHADER,
-    COMPLETE_SHADER
-  };
+    COMPLETE_SHADER, SIMPLE_COLOR_SHADER
+    };
 
   public static Shader getInstance(ShaderType type) {
     if (type == ShaderType.SIMPLE_SHADER) {
       return new Shader("simple_vertex.glsl", "simple_fragment.glsl");
-    } else if (type == ShaderType.SIMPLE_COLOR_SHADER) {
-      return new Shader("model_vertex.glsl", "simple_fragment_color.glsl");
     } else if (type == ShaderType.TRANSFORM_SHADER) {
       return new Shader("transform_vertex.glsl", "simple_fragment.glsl");
     } else if (type == ShaderType.MODEL_MATRIX_SHADER) {

@@ -1,0 +1,24 @@
+newmtl gym04_001tga_1
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka gym04_001tga_1.png
+map_Kd gym04_001tga_1.png
+map_d gym04_001tga_1.png
+newmtl gym04_002tga_1
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka gym04_002tga_1.png
+map_Kd gym04_002tga_1.png
+map_d gym04_002tga_1.png
+newmtl gym04_003tga_1
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka gym04_003tga_1.png
+map_Kd gym04_003tga_1.png
+map_d gym04_003tga_1.png
