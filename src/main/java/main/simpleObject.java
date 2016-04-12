@@ -129,4 +129,16 @@ public class simpleObject {
     public void dispose() {
         this.object.dispose();
     }
+    
+    public float getX(){
+        return this.position[0];
+    }
+    
+    public float getY(){
+        return this.position[1];
+    }
+    
+    public float getZ(){
+        return this.position[2];
+    }
 }

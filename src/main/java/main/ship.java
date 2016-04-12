@@ -6,6 +6,7 @@
 package main;
 
 import br.usp.icmc.vicg.gl.jwavefront.JWavefrontObject;
+import br.usp.icmc.vicg.gl.matrix.Matrix4;
 import java.io.File;
 
 /**
@@ -16,9 +17,9 @@ public class ship {
 
     private final simpleObject ship_obj;
     
-    public  ship(){
+    public ship(){
         this.ship_obj = new simpleObject(new JWavefrontObject(new File("./data/feisar/Feisar_Ship.obj")), new float[] {0.25f, 0.25f, 0.25f}, 
-                new float[] {270f, 0f, 0f},
+                new float[] {0f, 0f, 0f},
                 new float[] {0f, 0f, 0f}, 
                 new float[] {0f, 0f, 0f},
                 0f);
@@ -37,10 +38,25 @@ public class ship {
     }
     
     public void firstLand(int start_time, int minutes, int seconds){
-        this.ship_obj.addSpeed(simpleObject.KEEP_VALUE, -0.003f, simpleObject.KEEP_VALUE);
-//        this.ship_obj.addPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);
+//        this.ship_obj.addSpeed(simpleObject.KEEP_VALUE, -0.003f, simpleObject.KEEP_VALUE);
+//        this.ship_obj.addPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);;
         this.ship_obj.addRotation(8.2f, 0f, 0f);
-        
+        this.update();
+    }
+    
+    /**
+     *
+     * @param camera
+     */
+
+    public void focus(Matrix4 camera){
+        camera.loadIdentity();
+        camera.lookAt(
+                1, 1, 1,
+                0, 0, 0, 
+                1, 1, 1);
+        camera.bind();
+    }
 //this.ship_obj.setPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);
                 /*if (this.ship_obj.getPosition()[1] > -2.0f) {    //Aplica gravidade
                     this.ship_obj.addSpeed(0f, -0.003f, 0f);
@@ -59,7 +75,6 @@ public class ship {
                 
                 if (seconds == start_time + 4 && minutes == 0) {
                 }*/
-    }
 }
 
 

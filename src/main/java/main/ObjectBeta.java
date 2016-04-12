@@ -23,7 +23,8 @@ import main.planet;
 public class ObjectBeta implements GLEventListener {
 
     private static final int ANIMATION_START_TIME = 3;  
-    //padrão: 3  
+    private float counter;
+//padrão: 3  
     
     private enum animationStep {
 
@@ -42,6 +43,7 @@ public class ObjectBeta implements GLEventListener {
     
     private ship main_ship;
     private planet moon;
+//    private ship view_ship;
     
     private long timeStart;
     private long timeEnd;
@@ -58,11 +60,15 @@ public class ObjectBeta implements GLEventListener {
 //        light = new Light();
         
         main_ship = new ship();
+//        view_ship = new ship();
+        
         moon = new planet();
-
+        
         timeStart = System.currentTimeMillis();
         timeEnd = System.currentTimeMillis();
         timeDiff = 0;
+        
+        counter = 0;
     }
    
     @Override
@@ -86,6 +92,7 @@ public class ObjectBeta implements GLEventListener {
             
             main_ship.getObj().getReady(gl, shader);
             moon.getObj().getReady(gl, shader);
+//            view_ship.getObj().getReady(gl, shader);
             
         } catch (IOException ex) {
             Logger.getLogger(ObjectBeta.class.getName()).log(Level.SEVERE, null, ex);
@@ -124,6 +131,7 @@ public class ObjectBeta implements GLEventListener {
         minutes = (int)(timeDiff / 60000) % 60;
         
         main_ship.firstLand(ANIMATION_START_TIME, minutes, seconds);
+//        view_ship.update();
 //        switch (aStep) {
 //            case START:
 //                if (seconds == Objetoteste.ANIMATION_START_TIME && minutes == 0) {  //Espera para começar apresentação do main_ship
@@ -470,15 +478,18 @@ public class ObjectBeta implements GLEventListener {
 //        }
         // --------------------------------
         
-        viewMatrix.loadIdentity();
-        viewMatrix.lookAt(
-                1, 1, 1, 
-                0, 0, 0, 
-                0, 1, 0);
-        viewMatrix.bind();
-           
+//        viewMatrix.loadIdentity();
+//       
+//        viewMatrix.lookAt(
+//                1, 1, 1,
+//                0, 0, 0, 
+//                0, 1, 0);
+//        viewMatrix.bind();
+//           
 //        light.bind();
-        
+    
+    main_ship.focus(viewMatrix);
+
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
         modelMatrix.rotate(moon.getObj().getRotation()[0],1,0,0);
@@ -507,7 +518,9 @@ public class ObjectBeta implements GLEventListener {
     public void dispose(GLAutoDrawable glad) {
         moon.getObj().dispose();
         main_ship.getObj().dispose();
+//      view_ship.getObj().dispose();
     }
+    
 
     @Override
     public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
