@@ -9,10 +9,7 @@ import br.usp.icmc.vicg.gl.jwavefront.JWavefrontObject;
 import br.usp.icmc.vicg.gl.matrix.Matrix4;
 import java.io.File;
 
-/**
- *
- * @author paulogdm
- */
+
 public class ship {
 
     private final simpleObject ship_obj;
@@ -37,7 +34,7 @@ public class ship {
         this.ship_obj.updatePosition();
     }
     
-    public void firstLand(int start_time, int minutes, int seconds){
+    public void firstLand(){
 //        this.ship_obj.addSpeed(simpleObject.KEEP_VALUE, -0.003f, simpleObject.KEEP_VALUE);
 //        this.ship_obj.addPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);;
         this.ship_obj.addRotation(8.2f, 0f, 0f);
@@ -49,10 +46,10 @@ public class ship {
      * @param camera
      */
 
-    public void focus(Matrix4 camera){
+    public void focusOnMe(Matrix4 camera){
         camera.loadIdentity();
         camera.lookAt(
-                1, 1, 1,
+                this.ship_obj.getX(), this.ship_obj.getY(), this.ship_obj.getZ(),
                 0, 0, 0, 
                 1, 1, 1);
         camera.bind();
