@@ -37,7 +37,7 @@ public class ship {
     public void firstLand(){
 //        this.ship_obj.addSpeed(simpleObject.KEEP_VALUE, -0.003f, simpleObject.KEEP_VALUE);
 //        this.ship_obj.addPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);;
-        this.ship_obj.addRotation(8.2f, 0f, 0f);
+        this.ship_obj.addRotation(8.0f, 0f, 0f);
         this.update();
     }
     

@@ -6,6 +6,9 @@ import br.usp.icmc.vicg.gl.util.Shader;
 import br.usp.icmc.vicg.gl.util.ShaderFactory;
 import static com.sun.java.accessibility.util.AWTEventMonitor.*;
 import java.io.IOException;
+import static java.lang.Math.abs;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.opengl.GL;
@@ -29,7 +32,10 @@ public class ObjectBeta implements GLEventListener {
 //    private ship view_ship;
     
     private final InputKey input;
-   
+    
+    private float left_right_angle;
+    private float up_down_angle;
+    
     public ObjectBeta() {
 
         shader = ShaderFactory.getInstance(ShaderFactory.ShaderType.COMPLETE_SHADER);
@@ -38,7 +44,7 @@ public class ObjectBeta implements GLEventListener {
         viewMatrix = new Matrix4();
         
         viewMatrix_stored = new float[][]{
-            {1, 1, 1},
+            {0, 2, 2},
             {0, 0 ,0},
             {0,1,0}
         };
@@ -51,6 +57,9 @@ public class ObjectBeta implements GLEventListener {
         moon = new planet();
         
         input = new InputKey();
+        
+        left_right_angle = 0;
+        up_down_angle = 0;
     }
    
     @Override
@@ -171,32 +180,36 @@ public class ObjectBeta implements GLEventListener {
     }
     
     public void cameraUpdate(){
-      this.input.update();
         
+        this.input.update();
+      
         if(this.input.getDown()){
             System.out.println("DOWN");
-            viewMatrix_stored[0][1]-=0.1;
+            up_down_angle = (up_down_angle-0.1f)%360;
         } 
         
         if(this.input.getUp()){
             System.out.println("UP");
-            viewMatrix_stored[0][1]+=0.1;
+            up_down_angle = (up_down_angle+0.1f)%360;
         }
         
         if(this.input.getRight()){
             System.out.println("RIGHT");
-            viewMatrix_stored[0][2]+=0.1;
+            left_right_angle = (left_right_angle-0.1f)%360;
         }
         
         if(this.input.getLeft()){
             System.out.println("LEFT");
-            viewMatrix_stored[0][2]-=0.1;
+            left_right_angle = (left_right_angle+0.2f)%360;
         }
+        
+        viewMatrix_stored[0][0] = 2.0f*(float)(sin(left_right_angle)*cos(up_down_angle));
+        viewMatrix_stored[0][1] = 2.0f*(float)(sin(left_right_angle)*sin(up_down_angle));
+        viewMatrix_stored[0][2] = 2.0f*(float)(cos(left_right_angle));
         
         viewMatrix.loadIdentity();
         viewMatrix.lookAt(viewMatrix_stored);
         viewMatrix.bind();
-        
     }
     
     public InputKey getKeyListener(){
