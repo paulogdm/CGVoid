@@ -16,7 +16,7 @@ public class ship {
     
     public ship(){
         this.ship_obj = new simpleObject(new JWavefrontObject(new File("./data/feisar/Feisar_Ship.obj")), new float[] {0.25f, 0.25f, 0.25f}, 
-                new float[] {0f, 0f, 0f},
+                new float[] {1f, 1f, 1f},
                 new float[] {0f, 0f, 0f}, 
                 new float[] {0f, 0f, 0f},
                 0f);
@@ -49,9 +49,10 @@ public class ship {
     public void focusOnMe(Matrix4 camera){
         camera.loadIdentity();
         camera.lookAt(
-                this.ship_obj.getX(), this.ship_obj.getY(), this.ship_obj.getZ(),
+                //this.ship_obj.getX(), this.ship_obj.getY(), this.ship_obj.getZ(),
+                1, 1, 1,
                 0, 0, 0, 
-                1, 1, 1);
+                0, 1, 0);
         camera.bind();
     }
 //this.ship_obj.setPosition(simpleObject.KEEP_VALUE, 0.01f, simpleObject.KEEP_VALUE);
