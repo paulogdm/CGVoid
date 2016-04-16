@@ -180,6 +180,11 @@ public class Matrix4 {
     ortho[15] = 1.0f;
     multiply(ortho);
   }
+  
+  
+  public void lookAt(float[][] matrix) {
+    this.lookAt(matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1], matrix[2][2]);
+  }
 
   public void lookAt(float x0, float y0, float z0,
           float xref, float yref, float zref,

@@ -19,7 +19,9 @@ public class main {
         //criar canvas
         GLCanvas canvas = new GLCanvas(cap);
         //registra meu desenhador
-        canvas.addGLEventListener(new ObjectBeta());
+        ObjectBeta obj = new ObjectBeta();
+        canvas.addGLEventListener(obj);
+        canvas.addKeyListener(obj.getKeyListener());
         
         JFrame frame = new JFrame("Beta");
         frame.getContentPane().add(canvas);
@@ -29,6 +31,9 @@ public class main {
         AnimatorBase animator = new FPSAnimator(canvas, 30);
         
         frame.setVisible(true);
+        
+        frame.setFocusable(true);
+        
         animator.start();
     }
      

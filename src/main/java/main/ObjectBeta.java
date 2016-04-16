@@ -1,15 +1,10 @@
 package main;
 
 import br.usp.icmc.vicg.gl.core.Light;
-import br.usp.icmc.vicg.gl.jwavefront.JWavefrontObject;
 import br.usp.icmc.vicg.gl.matrix.Matrix4;
-import br.usp.icmc.vicg.gl.model.Cube;
-import br.usp.icmc.vicg.gl.model.SimpleModel;
-import br.usp.icmc.vicg.gl.model.Sphere;
-import br.usp.icmc.vicg.gl.model.WiredCube;
 import br.usp.icmc.vicg.gl.util.Shader;
 import br.usp.icmc.vicg.gl.util.ShaderFactory;
-import java.io.File;
+import static com.sun.java.accessibility.util.AWTEventMonitor.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,14 +12,13 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import main.ship;
-import main.planet;
 
 public class ObjectBeta implements GLEventListener {
     
     private Shader shader;
     private Matrix4 modelMatrix;//Matrix4 é implementacao da primeira e da segunda prova
     private Matrix4 projectionMatrix;
+    private float[][] viewMatrix_stored;
     private Matrix4 viewMatrix;
     private Light light;
     
@@ -34,29 +28,29 @@ public class ObjectBeta implements GLEventListener {
     private planet moon;
 //    private ship view_ship;
     
-    private long timeStart;
-    private long timeEnd;
-    private long timeDiff;
-    private int seconds;
-    private int minutes;
-    
+    private final InputKey input;
+   
     public ObjectBeta() {
 
         shader = ShaderFactory.getInstance(ShaderFactory.ShaderType.COMPLETE_SHADER);
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
         viewMatrix = new Matrix4();
-//        light = new Light();
+        
+        viewMatrix_stored = new float[][]{
+            {1, 1, 1},
+            {0, 0 ,0},
+            {0,1,0}
+        };
+        
+        light = new Light();
         
         main_ship = new ship();
 //        view_ship = new ship();
         
         moon = new planet();
         
-        timeStart = System.currentTimeMillis();
-        timeEnd = System.currentTimeMillis();
-        timeDiff = 0;
-
+        input = new InputKey();
     }
    
     @Override
@@ -87,13 +81,16 @@ public class ObjectBeta implements GLEventListener {
         }
         
         //init the light
-        /*
         light.setPosition(new float[]{10, 10, 50, 1.0f});
         light.setAmbientColor(new float[]{0.1f, 0.1f, 0.1f, 1.0f});
         light.setDiffuseColor(new float[]{0.75f, 0.75f, 0.75f, 1.0f});
         light.setSpecularColor(new float[]{0.7f, 0.7f, 0.7f, 1.0f});
         light.init(gl, shader);
-        */
+       
+        
+        viewMatrix.loadIdentity();
+        viewMatrix.lookAt(viewMatrix_stored);
+        viewMatrix.bind();
     }
     
     @Override
@@ -113,11 +110,7 @@ public class ObjectBeta implements GLEventListener {
                 -2 * 2.0f, 2 * 2.0f);
         projectionMatrix.bind();
         
-        timeEnd = System.currentTimeMillis();
-        timeDiff = timeEnd - timeStart;
-        seconds = (int)(timeDiff / 1000) % 60;
-        minutes = (int)(timeDiff / 60000) % 60;
-        
+      
         main_ship.firstLand();
 
 //        viewMatrix.loadIdentity();
@@ -128,11 +121,34 @@ public class ObjectBeta implements GLEventListener {
 //                0, 1, 0);
 //        viewMatrix.bind();
 //           
-//        light.bind();
+        light.bind();
     
-    main_ship.focusOnMe(viewMatrix);
+        
+        main_ship.focusOnMe(viewMatrix);
+        
+        
+        this.cameraUpdate();
+        this.sceneUpdate();
+        gl.glFlush();
 
-        modelMatrix.loadIdentity();
+    }
+    
+    
+    @Override
+    public void dispose(GLAutoDrawable glad) {
+        moon.getObj().dispose();
+        main_ship.getObj().dispose();
+//      view_ship.getObj().dispose();
+    }
+    
+
+    @Override
+    public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
+        
+    }
+    
+    public void sceneUpdate(){
+     modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
         modelMatrix.rotate(moon.getObj().getRotation()[0],1,0,0);
         modelMatrix.rotate(moon.getObj().getRotation()[1],0,1,0);
@@ -152,20 +168,38 @@ public class ObjectBeta implements GLEventListener {
         
         modelMatrix.loadIdentity();
         modelMatrix.bind();        
-        gl.glFlush();
     }
     
-    
-    @Override
-    public void dispose(GLAutoDrawable glad) {
-        moon.getObj().dispose();
-        main_ship.getObj().dispose();
-//      view_ship.getObj().dispose();
-    }
-    
-
-    @Override
-    public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
+    public void cameraUpdate(){
+      this.input.update();
         
+        if(this.input.getDown()){
+            System.out.println("DOWN");
+            viewMatrix_stored[0][1]-=0.1;
+        } 
+        
+        if(this.input.getUp()){
+            System.out.println("UP");
+            viewMatrix_stored[0][1]+=0.1;
+        }
+        
+        if(this.input.getRight()){
+            System.out.println("RIGHT");
+            viewMatrix_stored[0][2]+=0.1;
+        }
+        
+        if(this.input.getLeft()){
+            System.out.println("LEFT");
+            viewMatrix_stored[0][2]-=0.1;
+        }
+        
+        viewMatrix.loadIdentity();
+        viewMatrix.lookAt(viewMatrix_stored);
+        viewMatrix.bind();
+        
+    }
+    
+    public InputKey getKeyListener(){
+        return this.input;
     }
 }
