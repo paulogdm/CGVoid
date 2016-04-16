@@ -49,4 +49,8 @@ public class InputKey implements KeyListener {
     public boolean getRight(){
         return this.right;
     }
+    
+    public boolean getExit(){
+        return this.exit;
+    }
 }
