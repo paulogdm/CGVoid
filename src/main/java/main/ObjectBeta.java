@@ -119,14 +119,11 @@ public class ObjectBeta implements GLEventListener {
                 -2.0f, 2.0f, 
                 -2 * 2.0f, 2 * 2.0f);
         projectionMatrix.bind();
-        
-      
-        main_ship.firstLand();
 
         light.bind();
         
         this.cameraUpdate();
-        
+        this.userInput();
         this.sceneUpdate();
         
         gl.glFlush();
@@ -174,27 +171,50 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();        
     }
     
-    public void cameraUpdate(){
-        
-        this.input.update();
-      
-        if(this.input.getDown()){
+    public void userInput(){
+    
+         if(this.input.getDown()){
             System.out.println("DOWN");
-            up_down_angle = (up_down_angle-0.1f)%360;
-        } 
+            main_ship.rotate(8.0f, 0, 0);
+        }
         
         if(this.input.getUp()){
             System.out.println("UP");
-            up_down_angle = (up_down_angle+0.1f)%360;
+            main_ship.rotate(-8.0f, 0, 0);
         }
         
         if(this.input.getRight()){
             System.out.println("RIGHT");
-            left_right_angle = (left_right_angle-0.1f)%360;
+            main_ship.rotate(0, 8.0f, 0);
         }
         
         if(this.input.getLeft()){
             System.out.println("LEFT");
+            main_ship.rotate(0, -8.0f, 0);
+        }
+    }
+    
+    public void cameraUpdate(){
+        
+        this.input.update();
+      
+        if(this.input.getArrowDown()){
+            System.out.println("ARROW DOWN");
+//            up_down_angle = (up_down_angle-0.1f)%360;
+        }
+        
+        if(this.input.getArrowUp()){
+            System.out.println("ARROW UP");
+//            up_down_angle = (up_down_angle+0.1f)%360;
+        }
+        
+        if(this.input.getArrowRight()){
+            System.out.println("ARROW RIGHT");
+            left_right_angle = (left_right_angle-0.2f)%360;
+        }
+        
+        if(this.input.getArrowLeft()){
+            System.out.println("ARROW LEFT");
             left_right_angle = (left_right_angle+0.2f)%360;
         }
         
