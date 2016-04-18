@@ -59,8 +59,8 @@ public class ObjectBeta implements GLEventListener {
         
         input = new InputKey();
         
-        left_right_angle = 0;
-        up_down_angle = 0;
+        left_right_angle = 270;
+        up_down_angle = 90;
     }
    
     @Override
@@ -200,27 +200,44 @@ public class ObjectBeta implements GLEventListener {
       
         if(this.input.getArrowDown()){
             System.out.println("ARROW DOWN");
-//            up_down_angle = (up_down_angle-0.1f)%360;
+            if(this.input.getShift()){
+                up_down_angle = (up_down_angle-4f)%360;
+            } else {
+                up_down_angle = (up_down_angle-1f)%360;
+            }
         }
         
         if(this.input.getArrowUp()){
             System.out.println("ARROW UP");
-//            up_down_angle = (up_down_angle+0.1f)%360;
+            if(this.input.getShift()){
+                up_down_angle = (up_down_angle+4f)%360;
+            } else {
+                up_down_angle = (up_down_angle+1f)%360;
+            }
         }
         
         if(this.input.getArrowRight()){
             System.out.println("ARROW RIGHT");
-            left_right_angle = (left_right_angle-0.2f)%360;
+            if(this.input.getShift()){
+                left_right_angle = (left_right_angle-4f)%360;
+            } else {
+                left_right_angle = (left_right_angle-1f)%360;
+            }
         }
         
         if(this.input.getArrowLeft()){
             System.out.println("ARROW LEFT");
-            left_right_angle = (left_right_angle+0.2f)%360;
+            if(this.input.getShift()){
+                left_right_angle = (left_right_angle+4f)%360;
+            } else {
+                left_right_angle = (left_right_angle+1f)%360;
+            }
         }
-        
-        viewMatrix_stored[0][0] = 2.0f*(float)(sin(left_right_angle)*cos(up_down_angle));
-        viewMatrix_stored[0][1] = 2.0f*(float)(sin(left_right_angle)*sin(up_down_angle));
-        viewMatrix_stored[0][2] = 2.0f*(float)(cos(left_right_angle));
+
+        viewMatrix_stored[0][0] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.cos((left_right_angle * ((Math.PI % 360) / 180)));
+        viewMatrix_stored[0][1] = 2.0f * (float) Math.cos((up_down_angle * ((Math.PI % 360) / 180)));
+        viewMatrix_stored[0][2] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.sin((left_right_angle * ((Math.PI % 360) / 180)));
+           
         
         viewMatrix.loadIdentity();
         viewMatrix.lookAt(viewMatrix_stored);

@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 public class InputKey implements KeyListener {
     private final boolean[] keys = new boolean[120];  
     public boolean up, down, left, right, exit;
-    public boolean arrow_up, arrow_down, arrow_left, arrow_right;
+    public boolean arrow_up, arrow_down, arrow_left, arrow_right, shift;
     
     public void update(){
         up = keys[KeyEvent.VK_W];
@@ -22,6 +22,7 @@ public class InputKey implements KeyListener {
         arrow_down = keys[KeyEvent.VK_DOWN];
         arrow_right = keys[KeyEvent.VK_RIGHT];
         arrow_left = keys[KeyEvent.VK_LEFT];
+        shift = keys[KeyEvent.VK_SHIFT];
         exit = keys[KeyEvent.VK_ESCAPE];
     }
 
@@ -73,5 +74,9 @@ public class InputKey implements KeyListener {
     
     public boolean getArrowRight(){
         return this.arrow_right;
+    }
+    
+    public boolean getShift(){
+        return this.shift;
     }
 }
