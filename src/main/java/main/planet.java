@@ -12,28 +12,10 @@ import java.io.File;
  *
  * @author paulogdm
  */
-public class planet {
+public class planet extends objectContainer{
 
-    private final simpleObject planet_obj;
-    
     public  planet(){
-        this.planet_obj = new simpleObject(new JWavefrontObject(new File("./data/planet2.obj")), 
-                new float[] {1f, 1f, 1f}, 
-                new float[] {0f, 0f, 0f},
-                new float[] {0f, -2.0f, 0f}, 
-                new float[] {0f, 0f, 0f},
-                0f);
-    }
-    
-    /**
-     *
-     * @return 
-     */
-    public simpleObject getObj(){
-        return this.planet_obj;
-    }
-    
-    public void update(){
-        this.planet_obj.updatePosition();
+        super("./data/planet2.obj");
+        this.getObj().setPosition(0f, -2.0f, 0f);
     }
 }
