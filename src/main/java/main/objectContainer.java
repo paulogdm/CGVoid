@@ -14,7 +14,7 @@ import java.io.File;
  */
 public class objectContainer {
     
-    private simpleObject obj;
+    protected simpleObject obj;
     
     public objectContainer(String file){
         this.obj = new simpleObject(new JWavefrontObject(new File(file)), 

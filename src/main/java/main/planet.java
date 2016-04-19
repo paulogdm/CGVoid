@@ -16,6 +16,6 @@ public class planet extends objectContainer{
 
     public  planet(){
         super("./data/planet2.obj");
-        this.getObj().setPosition(0f, -2.0f, 0f);
+        this.obj.setPosition(0f, -2.0f, 0f);
     }
 }

@@ -18,7 +18,7 @@ public class ship extends objectContainer{
     }
     
     public void rotate(float anglex, float angley, float anglez){
-        this.getObj().addRotation(anglex, angley, anglez);
+        this.obj.addRotation(anglex, angley, anglez);
         this.update();
     }
 }
