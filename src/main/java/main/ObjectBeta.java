@@ -16,6 +16,21 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.swing.JFrame;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
 
 public class ObjectBeta implements GLEventListener {
     
@@ -26,10 +41,11 @@ public class ObjectBeta implements GLEventListener {
     private Matrix4 viewMatrix;
     private Light light;
     
-    private simpleObject planet;
+    private SimpleObject planet;
     
-    private ship main_ship;
-    private planet moon;
+    private MainShip main_ship;
+    private Planet moon;
+    
 //    private ship view_ship;
     
     private final InputKey input;
@@ -52,10 +68,9 @@ public class ObjectBeta implements GLEventListener {
         
         light = new Light();
         
-        main_ship = new ship();
-//        view_ship = new ship();
+        main_ship = new MainShip();
         
-        moon = new planet();
+        moon = new Planet();
         
         input = new InputKey();
         
@@ -85,7 +100,8 @@ public class ObjectBeta implements GLEventListener {
             main_ship.getObj().getReady(gl, shader);
             moon.getObj().getReady(gl, shader);
 //            view_ship.getObj().getReady(gl, shader);
-            
+            main_ship.getMissileObj().getReady(gl, shader);
+
         } catch (IOException ex) {
             Logger.getLogger(ObjectBeta.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,8 +127,6 @@ public class ObjectBeta implements GLEventListener {
        
         // VARIABLE UPDATES ---------------
         
-        moon.getObj().updatePosition();    
-        
         projectionMatrix.loadIdentity();
         projectionMatrix.ortho(
                 -2.0f, 2.0f, 
@@ -129,7 +143,7 @@ public class ObjectBeta implements GLEventListener {
         gl.glFlush();
         
         if(this.input.getExit()){
-            //exit
+            this.dispose(glad);
         }
         
     }
@@ -139,7 +153,7 @@ public class ObjectBeta implements GLEventListener {
     public void dispose(GLAutoDrawable glad) {
         moon.getObj().dispose();
         main_ship.getObj().dispose();
-//      view_ship.getObj().dispose();
+        main_ship.getMissileObj().dispose();
     }
     
 
@@ -149,6 +163,14 @@ public class ObjectBeta implements GLEventListener {
     }
     
     public void sceneUpdate(){
+        
+        if(this.input.getSpaceBar() && main_ship.getMissileFlag()){
+            main_ship.toogleMissileFlag();
+        }
+        
+        main_ship.shoot();
+
+        
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
         modelMatrix.rotate(moon.getObj().getRotation()[0],1,0,0);
@@ -168,7 +190,18 @@ public class ObjectBeta implements GLEventListener {
         main_ship.getObj().draw();
         
         modelMatrix.loadIdentity();
-        modelMatrix.bind();        
+        modelMatrix.translate(main_ship.getMissileObj().getPosition()[0], main_ship.getMissileObj().getPosition()[1], main_ship.getMissileObj().getPosition()[2]);
+        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[0],1,0,0);
+        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[1],0,1,0);
+        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[2],0,0,1);
+        modelMatrix.scale(main_ship.getMissileObj().getSize()[0], main_ship.getMissileObj().getSize()[1], main_ship.getMissileObj().getSize()[2]);
+        modelMatrix.bind();
+        main_ship.getMissileObj().draw();
+        
+        modelMatrix.loadIdentity();
+        modelMatrix.bind();
+        
+        
     }
     
     public void userInput(){
@@ -237,7 +270,8 @@ public class ObjectBeta implements GLEventListener {
         viewMatrix_stored[0][0] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.cos((left_right_angle * ((Math.PI % 360) / 180)));
         viewMatrix_stored[0][1] = 2.0f * (float) Math.cos((up_down_angle * ((Math.PI % 360) / 180)));
         viewMatrix_stored[0][2] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.sin((left_right_angle * ((Math.PI % 360) / 180)));
-           
+        
+        
         
         viewMatrix.loadIdentity();
         viewMatrix.lookAt(viewMatrix_stored);
