@@ -12,9 +12,9 @@ import java.io.File;
  *
  * @author paulogdm
  */
-public class planet extends objectContainer{
+public class Planet extends ObjectContainer{
 
-    public  planet(){
+    public  Planet(){
         super("./data/planet2.obj");
         this.obj.setPosition(0f, -2.0f, 0f);
     }

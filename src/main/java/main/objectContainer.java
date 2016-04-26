@@ -12,12 +12,12 @@ import java.io.File;
  *
  * @author paulogdm
  */
-public class objectContainer {
+public class ObjectContainer {
     
-    protected simpleObject obj;
+    protected SimpleObject obj;
     
-    public objectContainer(String file){
-        this.obj = new simpleObject(new JWavefrontObject(new File(file)), 
+    public ObjectContainer(String file){
+        this.obj = new SimpleObject(new JWavefrontObject(new File(file)), 
         new float[] {1f, 1f, 1f}, 
         new float[] {0f, 0f, 0f},
         new float[] {0f, 0f, 0f}, 
@@ -29,7 +29,7 @@ public class objectContainer {
      *
      * @return 
      */
-    public simpleObject getObj(){
+    public SimpleObject getObj(){
         return this.obj;
     }
     

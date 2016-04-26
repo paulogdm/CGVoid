@@ -14,7 +14,7 @@ import javax.media.opengl.GL3;
  *
  * @author Nathan
  */
-public class simpleObject {
+public class SimpleObject {
     public static final float KEEP_VALUE = 314.159265f;
     
     private JWavefrontObject object;
@@ -25,7 +25,7 @@ public class simpleObject {
     private float auxFactor;
     private boolean drawable;
     
-    public simpleObject(JWavefrontObject object) {
+    public SimpleObject(JWavefrontObject object) {
         this.object = object;
         this.size = new float[] {0f, 0f, 0f};
         this.rotation = new float[] {0f, 0f, 0f};
@@ -34,7 +34,7 @@ public class simpleObject {
         this.auxFactor = 0f;
         this.drawable = true;
     }
-    public simpleObject(JWavefrontObject object, float[] size, float[] rotation, float[] position, float[] speed, float auxFactor) {
+    public SimpleObject(JWavefrontObject object, float[] size, float[] rotation, float[] position, float[] speed, float auxFactor) {
         this.object = object;
         this.size = size;
         this.rotation = rotation;
@@ -45,24 +45,24 @@ public class simpleObject {
     }
     
     public void setSize(float x, float y, float z) {
-        this.size[0] = (x != simpleObject.KEEP_VALUE) ? x : this.size[0];
-        this.size[1] = (y != simpleObject.KEEP_VALUE) ? y : this.size[1];
-        this.size[2] = (z != simpleObject.KEEP_VALUE) ? z : this.size[2];
+        this.size[0] = (x != SimpleObject.KEEP_VALUE) ? x : this.size[0];
+        this.size[1] = (y != SimpleObject.KEEP_VALUE) ? y : this.size[1];
+        this.size[2] = (z != SimpleObject.KEEP_VALUE) ? z : this.size[2];
     }
     public void setRotation(float x, float y, float z) {
-        this.rotation[0] = (x != simpleObject.KEEP_VALUE) ? x : this.rotation[0];
-        this.rotation[1] = (y != simpleObject.KEEP_VALUE) ? y : this.rotation[1];
-        this.rotation[2] = (z != simpleObject.KEEP_VALUE) ? z : this.rotation[2];
+        this.rotation[0] = (x != SimpleObject.KEEP_VALUE) ? x : this.rotation[0];
+        this.rotation[1] = (y != SimpleObject.KEEP_VALUE) ? y : this.rotation[1];
+        this.rotation[2] = (z != SimpleObject.KEEP_VALUE) ? z : this.rotation[2];
     }
     public void setPosition(float x, float y, float z) {
-        this.position[0] = (x != simpleObject.KEEP_VALUE) ? x : this.position[0];
-        this.position[1] = (y != simpleObject.KEEP_VALUE) ? y : this.position[1];
-        this.position[2] = (z != simpleObject.KEEP_VALUE) ? z : this.position[2];
+        this.position[0] = (x != SimpleObject.KEEP_VALUE) ? x : this.position[0];
+        this.position[1] = (y != SimpleObject.KEEP_VALUE) ? y : this.position[1];
+        this.position[2] = (z != SimpleObject.KEEP_VALUE) ? z : this.position[2];
     }
     public void setSpeed(float x, float y, float z) {
-        this.speed[0] = (x != simpleObject.KEEP_VALUE) ? x : this.speed[0];
-        this.speed[1] = (y != simpleObject.KEEP_VALUE) ? y : this.speed[1];
-        this.speed[2] = (z != simpleObject.KEEP_VALUE) ? z : this.speed[2];
+        this.speed[0] = (x != SimpleObject.KEEP_VALUE) ? x : this.speed[0];
+        this.speed[1] = (y != SimpleObject.KEEP_VALUE) ? y : this.speed[1];
+        this.speed[2] = (z != SimpleObject.KEEP_VALUE) ? z : this.speed[2];
     }
     public void setAuxFactor(float auxFactor) {
         this.auxFactor = auxFactor;
