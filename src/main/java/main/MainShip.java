@@ -78,9 +78,10 @@ public class MainShip extends ObjectContainer{
     }
     
     public void changePosition(float x,float y,float z){
-        this.positions.setElementAt(x, 0);
+        /*this.positions.setElementAt(x, 0);
         this.positions.setElementAt(y, 1);
-        this.positions.setElementAt(z, 2);
+        this.positions.setElementAt(z, 2);*/
+        this.getObj().setPosition(x, y, z);
     }
 }
 

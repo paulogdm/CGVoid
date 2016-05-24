@@ -17,20 +17,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.swing.JFrame;
 import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
-import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
 
 public class ObjectBeta implements GLEventListener {
@@ -42,12 +28,15 @@ public class ObjectBeta implements GLEventListener {
     private Matrix4 viewMatrix;
     private Light light;
     private boolean go;
-    private float delta;
+    private float delta_x;
+    private float delta_y;
+    private float delta_z;
     
     private SimpleObject planet;
     
     private MainShip main_ship;
     private Planet moon;
+    private MainShip landingShip;
     
 //    private ship view_ship;
     
@@ -62,10 +51,11 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
         viewMatrix = new Matrix4();
-        delta=0.0f;
+        this.delta_x=0.0f;
+        this.delta_y=0.0f;
+        this.delta_z=0.0f;
         viewMatrix_stored = new float[][]{
             {0, 2, 2},
-            //{main_ship.getXShip(), main_ship.getYShip(), main_ship.getZShip()},
             {1,1,1},
             {0, 1,0}
         };
@@ -75,6 +65,8 @@ public class ObjectBeta implements GLEventListener {
         main_ship = new MainShip();
         
         moon = new Planet();
+        
+        landingShip = new MainShip();
         
         input = new InputKey();
         
@@ -105,6 +97,11 @@ public class ObjectBeta implements GLEventListener {
             moon.getObj().getReady(gl, shader);
 //            view_ship.getObj().getReady(gl, shader);
             main_ship.getMissileObj().getReady(gl, shader);
+            
+            
+            this.landingShip.getObj().setPosition(1.5f,1.5f, 2.0f);
+            this.landingShip.getObj().addRotation(90, 180, 180);
+            this.landingShip.getObj().getReady(gl, shader);
 
         } catch (IOException ex) {
             Logger.getLogger(ObjectBeta.class.getName()).log(Level.SEVERE, null, ex);
@@ -130,12 +127,22 @@ public class ObjectBeta implements GLEventListener {
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
        
         // VARIABLE UPDATES ---------------
-        delta += 0.01f;
-        //System.out.println(delta);
-        modelMatrix.loadIdentity();
-        modelMatrix.translate(0.0f, 0.0f, delta);
-        modelMatrix.bind();
-        moon.getObj().draw();
+        //consertar essa parte q o true eh setado varias vezes em um unico clique!!!!!!
+        if(this.go==true){
+            this.delta_z += 0.0005f;
+            System.out.println(this.delta_z);
+            if(this.delta_z <=0.057f){
+                this.moon.changePosition(this.moon.getObj().getX(), this.moon.getObj().getY(), this.moon.getObj().getZ()-delta_z);
+                this.landingShip.changePosition(this.landingShip.getObj().getX(), this.landingShip.getObj().getY(), this.landingShip.getObj().getZ()-delta_z);
+            }
+            else{
+                if(this.delta_x <= 0.055f){
+                    this.delta_x += 0.0005f;
+                    this.moon.changePosition(this.moon.getObj().getX() - this.delta_x, this.moon.getObj().getY(), this.moon.getObj().getZ());
+                    this.landingShip.changePosition(this.landingShip.getObj().getX() - this.delta_x, this.landingShip.getObj().getY(), this.landingShip.getObj().getZ());
+                }
+            }
+        }
         projectionMatrix.loadIdentity();
         projectionMatrix.ortho(
                 -2.0f, 2.0f, 
@@ -160,17 +167,13 @@ public class ObjectBeta implements GLEventListener {
         
     }
     
-    public void startMoving(){
-        System.out.println("started moving");
-        this.moon.changePosition(1.5f, 0.0f, -2.0f);
-    }
-    
     
     @Override
     public void dispose(GLAutoDrawable glad) {
         moon.getObj().dispose();
         main_ship.getObj().dispose();
         main_ship.getMissileObj().dispose();
+        landingShip.getObj().dispose();
     }
     
 
@@ -214,6 +217,15 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.scale(main_ship.getMissileObj().getSize()[0], main_ship.getMissileObj().getSize()[1], main_ship.getMissileObj().getSize()[2]);
         modelMatrix.bind();
         main_ship.getMissileObj().draw();
+        
+        modelMatrix.loadIdentity();
+        modelMatrix.translate(landingShip.getObj().getPosition()[0], landingShip.getObj().getPosition()[1], landingShip.getObj().getPosition()[2]);
+        modelMatrix.rotate(landingShip.getObj().getRotation()[0],1,0,0);
+        modelMatrix.rotate(landingShip.getObj().getRotation()[1],0,1,0);
+        modelMatrix.rotate(landingShip.getObj().getRotation()[2],0,0,1);
+        modelMatrix.scale(landingShip.getObj().getSize()[0], landingShip.getObj().getSize()[1], landingShip.getObj().getSize()[2]);
+        modelMatrix.bind();
+        this.landingShip.getObj().draw();
         
         modelMatrix.loadIdentity();
         modelMatrix.bind();
