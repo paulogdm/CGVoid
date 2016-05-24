@@ -186,7 +186,11 @@ public class Matrix4 {
     this.lookAt(matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1], matrix[2][2]);
   }
 
-  public void lookAt(float x0, float y0, float z0,
+  public void lookAt(
+          //primeira linha consiste local da camera
+          //segunda linha para onde ele estara apontando
+          //terceira linha posicao da camera em relacao ao mundo
+          float x0, float y0, float z0,
           float xref, float yref, float zref,
           float Vx, float Vy, float Vz) {
     float[] n = new float[]{x0 - xref, y0 - yref, z0 - zref};

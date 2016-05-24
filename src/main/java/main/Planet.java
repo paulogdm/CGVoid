@@ -15,7 +15,11 @@ import java.io.File;
 public class Planet extends ObjectContainer{
 
     public  Planet(){
-        super("./data/planet2.obj");
-        this.obj.setPosition(0f, -2.0f, 0f);
+        super("./data/planet/planet2.obj");
+        this.obj.setPosition(1.5f, 0.0f, 2.0f);
+    }
+    
+    public void changePosition(float x, float y, float z){
+        this.obj.setPosition(x, y, z);
     }
 }

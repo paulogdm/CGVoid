@@ -12,7 +12,7 @@ public class InputKey implements KeyListener {
     private final boolean[] keys = new boolean[120];  
     public boolean up, down, left, right, exit;
     public boolean arrow_up, arrow_down, arrow_left, arrow_right;
-    public boolean spaceBar, shift;
+    public boolean spaceBar, shift, G;
     
     public void update(){
         up = keys[KeyEvent.VK_W];
@@ -26,6 +26,7 @@ public class InputKey implements KeyListener {
         shift = keys[KeyEvent.VK_SHIFT];
         spaceBar = keys[KeyEvent.VK_SPACE];
         exit = keys[KeyEvent.VK_ESCAPE];
+        G = keys[KeyEvent.VK_G];
     }
 
     @Override
@@ -84,5 +85,9 @@ public class InputKey implements KeyListener {
     
     public boolean getSpaceBar(){
         return this.spaceBar;
+    }
+    
+    public boolean getG(){
+        return this.G;
     }
 }

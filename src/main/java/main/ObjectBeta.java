@@ -31,6 +31,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.abs;
 import static java.lang.Math.abs;
 import static java.lang.Math.abs;
+import static java.lang.Thread.sleep;
 
 public class ObjectBeta implements GLEventListener {
     
@@ -40,6 +41,8 @@ public class ObjectBeta implements GLEventListener {
     private float[][] viewMatrix_stored;
     private Matrix4 viewMatrix;
     private Light light;
+    private boolean go;
+    private float delta;
     
     private SimpleObject planet;
     
@@ -59,10 +62,11 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
         viewMatrix = new Matrix4();
-        
+        delta=0.0f;
         viewMatrix_stored = new float[][]{
             {0, 2, 2},
-            {0, 0 ,0},
+            //{main_ship.getXShip(), main_ship.getYShip(), main_ship.getZShip()},
+            {1,1,1},
             {0, 1,0}
         };
         
@@ -94,7 +98,7 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.init(gl,shader.getUniformLocation("u_modelMatrix"));
         projectionMatrix.init(gl, shader.getUniformLocation("u_projectionMatrix"));
         viewMatrix.init(gl, shader.getUniformLocation("u_viewMatrix"));
-        
+        this.go = false;
         try {
             
             main_ship.getObj().getReady(gl, shader);
@@ -126,12 +130,18 @@ public class ObjectBeta implements GLEventListener {
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
        
         // VARIABLE UPDATES ---------------
-        
+        delta += 0.01f;
+        //System.out.println(delta);
+        modelMatrix.loadIdentity();
+        modelMatrix.translate(0.0f, 0.0f, delta);
+        modelMatrix.bind();
+        moon.getObj().draw();
         projectionMatrix.loadIdentity();
         projectionMatrix.ortho(
                 -2.0f, 2.0f, 
                 -2.0f, 2.0f, 
                 -2 * 2.0f, 2 * 2.0f);
+        //projectionMatrix.translate(0.0f, 0.0f, delta);
         projectionMatrix.bind();
 
         light.bind();
@@ -139,13 +149,20 @@ public class ObjectBeta implements GLEventListener {
         this.cameraUpdate();
         this.userInput();
         this.sceneUpdate();
-        
+        /*if(this.go==true){
+            this.startMoving();
+        }*/
         gl.glFlush();
         
         if(this.input.getExit()){
             this.dispose(glad);
         }
         
+    }
+    
+    public void startMoving(){
+        System.out.println("started moving");
+        this.moon.changePosition(1.5f, 0.0f, -2.0f);
     }
     
     
@@ -169,7 +186,7 @@ public class ObjectBeta implements GLEventListener {
         }
         
         main_ship.shoot();
-
+                
         
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
@@ -225,6 +242,12 @@ public class ObjectBeta implements GLEventListener {
             System.out.println("LEFT");
             main_ship.rotate(0, -8.0f, 0);
         }
+        
+        if(this.input.getG()){
+            this.go = !this.go;
+            System.out.println("Hha");
+            //ERROR -- PEGA MAIS DE UMA VEZ EM UM UNICO CLIQUE!!!!!!!!!!!
+        }
     }
     
     public void cameraUpdate(){
@@ -267,10 +290,15 @@ public class ObjectBeta implements GLEventListener {
             }
         }
 
+        viewMatrix_stored[1][0] = main_ship.getXShip();
+        viewMatrix_stored[1][1] = main_ship.getYShip();
+        viewMatrix_stored[1][2] = main_ship.getZShip();
         viewMatrix_stored[0][0] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.cos((left_right_angle * ((Math.PI % 360) / 180)));
         viewMatrix_stored[0][1] = 2.0f * (float) Math.cos((up_down_angle * ((Math.PI % 360) / 180)));
         viewMatrix_stored[0][2] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.sin((left_right_angle * ((Math.PI % 360) / 180)));
+
         
+
         
         
         viewMatrix.loadIdentity();
