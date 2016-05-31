@@ -31,6 +31,7 @@ public class ObjectBeta implements GLEventListener {
     private float delta_x;
     private float delta_y;
     private float delta_z;
+    private float rotate;
     
     private SimpleObject planet;
     
@@ -55,8 +56,8 @@ public class ObjectBeta implements GLEventListener {
         this.delta_y=0.0f;
         this.delta_z=0.0f;
         viewMatrix_stored = new float[][]{
-            {0, 2, 2},
-            {1,1,1},
+            {0,2,2},
+            {1,5,1},
             {0, 1,0}
         };
         
@@ -137,9 +138,17 @@ public class ObjectBeta implements GLEventListener {
             }
             else{
                 if(this.delta_x <= 0.055f){
-                    this.delta_x += 0.0005f;
-                    this.moon.changePosition(this.moon.getObj().getX() - this.delta_x, this.moon.getObj().getY(), this.moon.getObj().getZ());
-                    this.landingShip.changePosition(this.landingShip.getObj().getX() - this.delta_x, this.landingShip.getObj().getY(), this.landingShip.getObj().getZ());
+                    if(this.rotate > -1.4f){
+                        this.rotate -= 0.01f;
+                        this.moon.getObj().addRotation(0.0f, this.rotate, 0.0f);
+                        this.landingShip.getObj().addRotation(0.0f, 0.0f, this.rotate);
+                        System.out.println("rotate: "+this.rotate);
+                    }
+                    else{
+                        this.delta_x += 0.0005f;
+                        this.moon.changePosition(this.moon.getObj().getX(), this.moon.getObj().getY(), this.moon.getObj().getZ()-delta_z);
+                this.landingShip.changePosition(this.landingShip.getObj().getX(), this.landingShip.getObj().getY(), this.landingShip.getObj().getZ()-delta_z);
+                    }
                 }
             }
         }
