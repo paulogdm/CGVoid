@@ -19,7 +19,8 @@ public class MainShip extends ObjectContainer{
     private Vector positions;
     
     public MainShip() {
-        super("./data/feisar/Feisar_Ship_OBJ/Feisar_Ship.obj");
+        //super("./data/feisar/Feisar_Ship_OBJ/Feisar_Ship.obj");
+        super("./data/xwing/xwing.obj");
         this.getObj().setSize(0.25f, 0.25f, 0.25f);
         this.positions = new Vector(3);
         this.positions.add(0.0f);

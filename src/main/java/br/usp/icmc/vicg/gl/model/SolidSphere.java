@@ -6,6 +6,7 @@
 package br.usp.icmc.vicg.gl.model;
 
 import java.util.ArrayList;
+import java.util.Vector;
 import javax.media.opengl.GL;
 
 /**
@@ -17,10 +18,16 @@ public class SolidSphere extends SimpleModel {
   private final int POLUDNIKOV = 36;
   private final int ROVNOBEZIEK = 18;
   private final double UHOL_KROK = ((2 * Math.PI / 360.0) * 10.0);
+  private Vector position;
 
-  public SolidSphere() {
+  public SolidSphere(float px, float py, float pz) {
     ArrayList<Float> vertex = new ArrayList<>();
-
+    
+    this.position = new Vector(3);
+    this.position.add(px);
+    this.position.add(py);
+    this.position.add(pz);
+        
     int p2 = POLUDNIKOV / 2;
     int r2 = ROVNOBEZIEK / 2;
     for (int y = -r2; y < r2; ++y) {
@@ -54,4 +61,16 @@ public class SolidSphere extends SimpleModel {
   public void draw() {
     draw(GL.GL_TRIANGLE_STRIP);
   }
+  
+  public float getX(){
+        return (float) this.position.get(0);
+    }
+    
+    public float getY(){
+        return (float) this.position.get(1);
+    }
+    
+    public float getZ(){
+        return (float) this.position.get(2);
+    }
 }

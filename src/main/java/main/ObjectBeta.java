@@ -1,9 +1,12 @@
 package main;
 
 import br.usp.icmc.vicg.gl.core.Light;
+import br.usp.icmc.vicg.gl.core.Material;
 import br.usp.icmc.vicg.gl.matrix.Matrix4;
+import br.usp.icmc.vicg.gl.model.SolidSphere;
 import br.usp.icmc.vicg.gl.util.Shader;
 import br.usp.icmc.vicg.gl.util.ShaderFactory;
+import br.usp.icmc.vicg.gl.model.Sphere;
 import static com.sun.java.accessibility.util.AWTEventMonitor.*;
 import java.io.IOException;
 import static java.lang.Math.abs;
@@ -18,6 +21,7 @@ import javax.media.opengl.GLEventListener;
 import javax.swing.JFrame;
 import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
+import java.util.Random;
 
 public class ObjectBeta implements GLEventListener {
     
@@ -27,6 +31,7 @@ public class ObjectBeta implements GLEventListener {
     private float[][] viewMatrix_stored;
     private Matrix4 viewMatrix;
     private Light light;
+    private Material material;
     private boolean go;
     private float delta_x;
     private float delta_y;
@@ -36,8 +41,10 @@ public class ObjectBeta implements GLEventListener {
     private SimpleObject planet;
     
     private MainShip main_ship;
-    private Planet moon;
+    private Planet moon, earth;
     private MainShip landingShip;
+    //private Point[] points_stars;
+    private SolidSphere[] points_stars;
     
 //    private ship view_ship;
     
@@ -62,10 +69,16 @@ public class ObjectBeta implements GLEventListener {
         };
         
         light = new Light();
+        material = new Material();
         
         main_ship = new MainShip();
         
-        moon = new Planet();
+        moon = new Planet("./data/earth/Moon/moon.obj");
+        earth = new Planet("./data/earth/Earth/moon.obj");
+        //earth = new Planet(".data/earth/death/dearth-star-II.obj");
+        //earth= new Planet("./data/earth/death/moon.obj");
+        
+        points_stars = new SolidSphere[1];
         
         landingShip = new MainShip();
         
@@ -96,6 +109,10 @@ public class ObjectBeta implements GLEventListener {
             
             main_ship.getObj().getReady(gl, shader);
             moon.getObj().getReady(gl, shader);
+            //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
+            earth.getObj().getReady(gl, shader);
+            earth.changePosition(0.0f, 0.0f, 8.0f);
+            this.earth.getObj().addSize(2, 2, 2);
 //            view_ship.getObj().getReady(gl, shader);
             main_ship.getMissileObj().getReady(gl, shader);
             
@@ -103,30 +120,51 @@ public class ObjectBeta implements GLEventListener {
             this.landingShip.getObj().setPosition(1.5f,1.5f, 2.0f);
             this.landingShip.getObj().addRotation(90, 180, 180);
             this.landingShip.getObj().getReady(gl, shader);
+            //this.points_stars = new Point[1000];
+            this.create_stars(gl);
 
         } catch (IOException ex) {
             Logger.getLogger(ObjectBeta.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         //init the light
-        light.setPosition(new float[]{10, 10, 50, 1.0f});
+        light.init(gl, shader);
+        light.setPosition(new float[]{10, 10, -50, 1.0f});
         light.setAmbientColor(new float[]{0.1f, 0.1f, 0.1f, 1.0f});
         light.setDiffuseColor(new float[]{0.75f, 0.75f, 0.75f, 1.0f});
         light.setSpecularColor(new float[]{0.7f, 0.7f, 0.7f, 1.0f});
-        light.init(gl, shader);
-       
+        light.bind();
+        material.init(gl, shader);
         
+
         viewMatrix.loadIdentity();
         viewMatrix.lookAt(viewMatrix_stored);
         viewMatrix.bind();
     }
     
+    private void create_stars(GL3 gl){
+        Random random = new Random();
+
+        for(int i=0; i < this.points_stars.length; i++){
+            System.out.println("entrou");
+            //x = random entre  -50 e 50
+            //y = random entre -50 e 50
+            //z = random entre 0 e -200
+            //this.points_stars[i] = new Point((random.nextFloat() - 0.5f)*50, (random.nextFloat()-0.5f)*50, -(random.nextInt(200) - 200),gl);
+            this.points_stars[i] = new SolidSphere((random.nextFloat() - 0.5f)*50, (random.nextFloat()-0.5f)*50, -(random.nextInt(50) - 50));
+            this.points_stars[i].init(gl, shader);
+            System.out.println(this.points_stars[i].getX());
+            System.out.println(this.points_stars[i].getY());
+            System.out.println(this.points_stars[i].getZ());
+        }
+    }
     @Override
     public void display(GLAutoDrawable glad) {
         GL3 gl = glad.getGL().getGL3();//pega gl3 pq pega todas as capacidades de mexer no shader
         
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
-       
+        //gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        gl.glClearDepth(1.0f);
         // VARIABLE UPDATES ---------------
         //consertar essa parte q o true eh setado varias vezes em um unico clique!!!!!!
         if(this.go==true){
@@ -153,14 +191,14 @@ public class ObjectBeta implements GLEventListener {
             }
         }
         projectionMatrix.loadIdentity();
-        projectionMatrix.ortho(
+        projectionMatrix.perspective(70.0f, 1f, 0.01f, 30.0f);
+        /*projectionMatrix.ortho(
                 -2.0f, 2.0f, 
                 -2.0f, 2.0f, 
-                -2 * 2.0f, 2 * 2.0f);
+                -2 * 2.0f, 2 * 2.0f);*/
         //projectionMatrix.translate(0.0f, 0.0f, delta);
         projectionMatrix.bind();
 
-        light.bind();
         
         this.cameraUpdate();
         this.userInput();
@@ -180,9 +218,13 @@ public class ObjectBeta implements GLEventListener {
     @Override
     public void dispose(GLAutoDrawable glad) {
         moon.getObj().dispose();
+        earth.getObj().dispose();
         main_ship.getObj().dispose();
         main_ship.getMissileObj().dispose();
         landingShip.getObj().dispose();
+        for(int i=0; i<this.points_stars.length;i++ ){
+            this.points_stars[i].dispose();
+        }
     }
     
 
@@ -198,7 +240,21 @@ public class ObjectBeta implements GLEventListener {
         }
         
         main_ship.shoot();
-                
+        
+        material.setAmbientColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        material.setDiffuseColor(new float[]{1.0f, 1.0f, 1.0f, 0.0f});
+        material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        material.setSpecularExponent(64);
+        material.bind();
+        //modelMatrix.loadIdentity();
+        //modelMatrix.translate(this.points_stars[0].getX(), this.points_stars[0].getZ(), this.points_stars[0].getZ());
+        //modelMatrix.translate(2, 2, 2);
+        //modelMatrix.bind();
+        modelMatrix.loadIdentity();
+        modelMatrix.scale(0.01f, 0.01f, 0.01f);
+        modelMatrix.bind();
+        this.points_stars[0].bind();
+        this.points_stars[0].draw();
         
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
@@ -208,6 +264,15 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.scale(moon.getObj().getSize()[0], moon.getObj().getSize()[1], moon.getObj().getSize()[2]);
         modelMatrix.bind();
         moon.getObj().draw();
+        
+        modelMatrix.loadIdentity();
+        modelMatrix.translate(earth.getObj().getPosition()[0], earth.getObj().getPosition()[1], earth.getObj().getPosition()[2]);
+        modelMatrix.rotate(earth.getObj().getRotation()[0],1,0,0);
+        modelMatrix.rotate(earth.getObj().getRotation()[1],0,1,0);
+        modelMatrix.rotate(earth.getObj().getRotation()[2],0,0,1);
+        modelMatrix.scale(earth.getObj().getSize()[0], earth.getObj().getSize()[1], earth.getObj().getSize()[2]);
+        modelMatrix.bind();
+        earth.getObj().draw();
         
         modelMatrix.loadIdentity();
         modelMatrix.translate(main_ship.getObj().getPosition()[0], main_ship.getObj().getPosition()[1], main_ship.getObj().getPosition()[2]);
@@ -226,6 +291,7 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.scale(main_ship.getMissileObj().getSize()[0], main_ship.getMissileObj().getSize()[1], main_ship.getMissileObj().getSize()[2]);
         modelMatrix.bind();
         main_ship.getMissileObj().draw();
+
         
         modelMatrix.loadIdentity();
         modelMatrix.translate(landingShip.getObj().getPosition()[0], landingShip.getObj().getPosition()[1], landingShip.getObj().getPosition()[2]);
@@ -235,10 +301,11 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.scale(landingShip.getObj().getSize()[0], landingShip.getObj().getSize()[1], landingShip.getObj().getSize()[2]);
         modelMatrix.bind();
         this.landingShip.getObj().draw();
+                
         
         modelMatrix.loadIdentity();
         modelMatrix.bind();
-        
+        light.bind();
         
     }
     

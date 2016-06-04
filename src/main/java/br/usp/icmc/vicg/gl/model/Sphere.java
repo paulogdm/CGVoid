@@ -6,6 +6,7 @@
 
 package br.usp.icmc.vicg.gl.model;
 
+import java.util.Vector;
 import javax.media.opengl.GL;
 
 /**
@@ -17,13 +18,19 @@ public class Sphere extends SimpleModel {
     private final int lats;
     private final int longs;
     private final float radius;
+    private Vector position;
 
-    public Sphere() {
+    public Sphere(float px,float py, float pz) {
         this.radius = 1;
         this.lats = 40;
         this.longs = 40;
+        this.position = new Vector(3);
+        this.position.add(px);
+        this.position.add(py);
+        this.position.add(pz);
+        
+        vertex_buffer = new float[((lats + 1) * (longs + 1) * 6)];
 
-        vertex_buffer = new float[(lats + 1) * (longs + 1) * 6];
 
         int i, j, k;
         for (i = 0, k = -1; i <= lats; i++) {
@@ -50,9 +57,21 @@ public class Sphere extends SimpleModel {
             }
         }
     }
-
+    
     @Override
     public void draw() {
         draw(GL.GL_LINE_LOOP);
+    }
+    
+    public float getX(){
+        return (float) this.position.get(0);
+    }
+    
+    public float getY(){
+        return (float) this.position.get(1);
+    }
+    
+    public float getZ(){
+        return (float) this.position.get(2);
     }
 }

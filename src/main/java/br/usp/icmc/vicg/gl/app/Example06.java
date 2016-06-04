@@ -46,7 +46,7 @@ public class Example06 implements GLEventListener {
         // Print OpenGL version
         System.out.println("OpenGL Version: " + gl.glGetString(GL.GL_VERSION) + "\n");
 
-        gl.glClearColor(1, 1, 1, 0);
+        gl.glClearColor(0, 0, 0, 0);
 
         //inicializa os shaders
         shader.init(gl);
