@@ -156,6 +156,7 @@ public class Example12 extends KeyAdapter implements GLEventListener {
         break;
       case KeyEvent.VK_UP://gira sobre o eixo-x
         alpha = alpha - 5;
+          System.out.println("entro");
         break;
       case KeyEvent.VK_DOWN://gira sobre o eixo-x
         alpha = alpha + 5;

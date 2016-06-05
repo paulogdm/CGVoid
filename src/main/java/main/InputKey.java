@@ -12,7 +12,8 @@ public class InputKey implements KeyListener {
     private final boolean[] keys = new boolean[120];  
     public boolean up, down, left, right, exit;
     public boolean arrow_up, arrow_down, arrow_left, arrow_right;
-    public boolean spaceBar, shift, G;
+    public boolean spaceBar, shift, G, Ctrl;
+    public boolean E, Q, W, S, A, D;
     
     public void update(){
         up = keys[KeyEvent.VK_W];
@@ -27,6 +28,13 @@ public class InputKey implements KeyListener {
         spaceBar = keys[KeyEvent.VK_SPACE];
         exit = keys[KeyEvent.VK_ESCAPE];
         G = keys[KeyEvent.VK_G];
+        Ctrl = keys[KeyEvent.VK_CONTROL];
+        E = keys[KeyEvent.VK_E];
+        Q = keys[KeyEvent.VK_Q];
+        W = keys[KeyEvent.VK_W];
+        S = keys[KeyEvent.VK_S];
+        A = keys[KeyEvent.VK_A];
+        D = keys[KeyEvent.VK_D];
     }
 
     @Override
@@ -89,5 +97,33 @@ public class InputKey implements KeyListener {
     
     public boolean getG(){
         return this.G;
+    }
+    
+    public boolean getCtrl(){
+        return this.Ctrl;
+    }
+    
+    public boolean getQ(){
+        return this.Q;
+    }
+    
+    public boolean getE(){
+        return this.E;
+    }
+    
+    public boolean getW(){
+        return this.W;
+    }
+    
+    public boolean getS(){
+        return this.S;
+    }
+    
+    public boolean getA(){
+        return this.A;
+    }
+    
+    public boolean getD(){
+        return this.D;
     }
 }

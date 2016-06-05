@@ -28,7 +28,7 @@ public class ObjectBeta implements GLEventListener {
     private Shader shader;
     private Matrix4 modelMatrix;//Matrix4 é implementacao da primeira e da segunda prova
     private Matrix4 projectionMatrix;
-    private float[] viewMatrix_stored;
+    private float[][] viewMatrix_stored;
     private Matrix4 viewMatrix;
     private Light light;
     private Material material;
@@ -37,10 +37,6 @@ public class ObjectBeta implements GLEventListener {
     private float delta_y;
     private float delta_z;
     private float rotate;
-    
-    //variaveis para camera
-    private float speed_x, speed_y, speed_z;
-    private float rotate_x, rotate_y, rotate_z;
     
     private SimpleObject planet;
     
@@ -57,7 +53,6 @@ public class ObjectBeta implements GLEventListener {
     private float left_right_angle;
     private float up_down_angle;
     
-    @SuppressWarnings("empty-statement")
     public ObjectBeta() {
 
         shader = ShaderFactory.getInstance(ShaderFactory.ShaderType.COMPLETE_SHADER);
@@ -67,12 +62,11 @@ public class ObjectBeta implements GLEventListener {
         this.delta_x=0.0f;
         this.delta_y=0.0f;
         this.delta_z=0.0f;
-        viewMatrix_stored = new float[]{0, 0, -1, 0, 0, 0, 0, 1, 0};
-        /*viewMatrix_stored = new float[][]{
+        viewMatrix_stored = new float[][]{
             {0,2,2},
             {1,5,1},
             {0, 1,0}
-        };*/
+        };
         
         light = new Light();
         material = new Material();
@@ -92,10 +86,6 @@ public class ObjectBeta implements GLEventListener {
         
         left_right_angle = 270;
         up_down_angle = 90;
-        
-        //inicializa variaveis da camera
-        speed_x = speed_y = speed_z = 0.0f;
-        rotate_x = rotate_y = rotate_z = 0.0f;
     }
    
     @Override
@@ -119,7 +109,6 @@ public class ObjectBeta implements GLEventListener {
         try {
             
             main_ship.getObj().getReady(gl, shader);
-            main_ship.getObj().addPosition(0.0f, 2.0f, 0.0f);
             moon.getObj().getReady(gl, shader);
             //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
             earth.getObj().getReady(gl, shader);
@@ -149,9 +138,9 @@ public class ObjectBeta implements GLEventListener {
         material.init(gl, shader);
         
 
-        //viewMatrix.loadIdentity();
-        //viewMatrix.lookAt(viewMatrix_stored);
-        //viewMatrix.bind();
+        viewMatrix.loadIdentity();
+        viewMatrix.lookAt(viewMatrix_stored);
+        viewMatrix.bind();
     }
     
     private void create_stars(GL3 gl){
@@ -177,7 +166,7 @@ public class ObjectBeta implements GLEventListener {
         gl.glClearDepth(1.0f);
         // VARIABLE UPDATES ---------------
         //consertar essa parte q o true eh setado varias vezes em um unico clique!!!!!!
-        /*if(this.go==true){
+        if(this.go==true){
             this.delta_z += 0.0005f;
             System.out.println(this.delta_z);
             if(this.delta_z <=0.057f){
@@ -199,7 +188,7 @@ public class ObjectBeta implements GLEventListener {
                     }
                 }
             }
-        }*/
+        }
         projectionMatrix.loadIdentity();
         projectionMatrix.perspective(70.0f, 1f, 0.01f, 30.0f);
         /*projectionMatrix.ortho(
@@ -208,36 +197,14 @@ public class ObjectBeta implements GLEventListener {
                 -2 * 2.0f, 2 * 2.0f);*/
         //projectionMatrix.translate(0.0f, 0.0f, delta);
         projectionMatrix.bind();
-        
-        viewMatrix.loadIdentity();
-        viewMatrix.lookAt(this.viewMatrix_stored);
-        viewMatrix.bind();
 
-        light.bind();
-    
-    
+        
         this.cameraUpdate();
-        viewMatrix.loadIdentity();
-        //viewMatrix.translate(this.speed_x, this.speed_y, this.speed_z);
-        viewMatrix_stored[0] += this.speed_x;
-        viewMatrix_stored[1] += this.speed_y;
-        viewMatrix_stored[2] += this.speed_z;
-        viewMatrix_stored[3] += this.speed_x;
-        viewMatrix_stored[4] += this.speed_y;
-        viewMatrix_stored[5] += this.speed_z;
-        
-        //viewMatrix.rotate(this.rotate_y, 0, 1, 0);
-        //viewMatrix.rotate(this.rotate_z, 0, 0, 1);
-        viewMatrix.rotate(this.rotate_x, 1, 0, 0);
-        viewMatrix.lookAt(viewMatrix_stored);
-        viewMatrix.bind();
-        
-        
-        //this.userInput();
+        this.userInput();
         this.sceneUpdate();
-        
-        light.bind();
-
+        /*if(this.go==true){
+            this.startMoving();
+        }*/
         gl.glFlush();
         
         if(this.input.getExit()){
@@ -363,45 +330,10 @@ public class ObjectBeta implements GLEventListener {
         }
     }
     
-    public void setKeyPressed(){
-        if(this.input.getArrowUp()){
-            this.speed_z += 0.05f;
-        }else if(this.input.getArrowDown()){
-            this.speed_z -= 0.05f;
-        }else if(this.input.getArrowLeft()){
-            this.speed_x += 0.05f;
-        }else if(this.input.getArrowRight()){
-            this.speed_x -= 0.05f;
-        }else if(this.input.getSpaceBar()){
-            this.speed_y += 0.05f;
-        }else if(this.input.getCtrl()){
-            this.speed_y -= 0.05f;
-        }else if(this.input.getQ()){
-            this.rotate_y += 3.0f;
-        }else if(this.input.getE()){
-            this.rotate_y -= 3.0f;
-        }else if(this.input.getW()){
-            this.rotate_x -= 3.0f;
-        }else if(this.input.getS()){
-            this.rotate_x += 3.0f;
-        }else if(this.input.getA()){
-            this.rotate_z += 3.0f;
-        }else if(this.input.getD()){
-            this.rotate_z -= 3.0f;
-        }
-    }
     public void cameraUpdate(){
         
         this.input.update();
-        
-        //this.rotate_x = 0.0f;
-        this.rotate_y = 0.0f;
-        this.rotate_z = 0.0f;
-        this.speed_x  = 0.0f;
-        this.speed_y  = 0.0f;
-        this.speed_z  = 0.0f;
-        this.setKeyPressed();
-      /*
+      
         if(this.input.getArrowDown()){
             System.out.println("ARROW DOWN");
             if(this.input.getShift()){
@@ -451,7 +383,7 @@ public class ObjectBeta implements GLEventListener {
         
         viewMatrix.loadIdentity();
         viewMatrix.lookAt(viewMatrix_stored);
-        viewMatrix.bind();*/
+        viewMatrix.bind();
     }
     
     public InputKey getKeyListener(){
