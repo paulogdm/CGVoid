@@ -1,5 +1,6 @@
 # SpaceSample a.k.a SS 
 TODO:
+
 	[] - rotacionar lua entorno da terra
 		Reserva- [] fazer um asteroide grande passar na frente da terra, mostando que há sombra
 	[] - posicionar naves em cima da lua
