@@ -32,8 +32,8 @@ public class Camera {
     
     public void init(GL3 gl, int handle){
         position_cam.add(0.0f);
-        position_cam.add(-4.0f);
-        position_cam.add(-5.0f);
+        position_cam.add(-3.0f);
+        position_cam.add(-3.0f);
         
         position_lookat.add(0.0f);
         position_lookat.add(0.0f);

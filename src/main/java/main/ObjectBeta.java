@@ -123,7 +123,7 @@ public class ObjectBeta implements GLEventListener {
             //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
             earth.getObj().getReady(gl, shader);
             earth.changePosition(0.0f, 0.0f, -8.0f);
-           // earth.getObj().addRotation(0, 180, 0);
+            earth.getObj().addRotation(0, 180, 0);
             this.earth.getObj().addSize(2, 2, 2);
 //            view_ship.getObj().getReady(gl, shader);
             main_ship.getMissileObj().getReady(gl, shader);
@@ -269,7 +269,7 @@ public class ObjectBeta implements GLEventListener {
             this.points_stars[i].draw();
         }
         
-        //moon.getObj().addRotation(0.0f, 0.5f, 0.0f);
+        moon.getObj().addRotation(0.0f, 0.07f, 0.0f);
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
         modelMatrix.rotate(moon.getObj().getRotation()[0],1,0,0);
@@ -279,6 +279,7 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         moon.getObj().draw();
         
+        earth.getObj().addRotation(0.0f, 0.03f, 0.0f);
         modelMatrix.loadIdentity();
         modelMatrix.translate(earth.getObj().getPosition()[0], earth.getObj().getPosition()[1], earth.getObj().getPosition()[2]);
         modelMatrix.rotate(earth.getObj().getRotation()[0],1,0,0);
