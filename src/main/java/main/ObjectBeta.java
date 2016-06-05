@@ -28,19 +28,15 @@ public class ObjectBeta implements GLEventListener {
     private Shader shader;
     private Matrix4 modelMatrix;//Matrix4 é implementacao da primeira e da segunda prova
     private Matrix4 projectionMatrix;
-    private float[] viewMatrix_stored;
-    private Matrix4 viewMatrix;
     private Light light;
     private Material material;
     private boolean go;
-    private float delta_x;
-    private float delta_y;
-    private float delta_z;
-    private float rotate;
     
     //variaveis para camera
+    private Camera cam;
     private float speed_x, speed_y, speed_z;
     private float rotate_x, rotate_y, rotate_z;
+    private float radius, phi, theta;
     
     private SimpleObject planet;
     
@@ -63,11 +59,9 @@ public class ObjectBeta implements GLEventListener {
         shader = ShaderFactory.getInstance(ShaderFactory.ShaderType.COMPLETE_SHADER);
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
-        viewMatrix = new Matrix4();
-        this.delta_x=0.0f;
-        this.delta_y=0.0f;
-        this.delta_z=0.0f;
-        viewMatrix_stored = new float[]{0, 0, -1, 0, 0, 0, 0, 1, 0};
+        cam = new Camera();
+        //viewMatrix = new Matrix4();
+        //viewMatrix_stored = new float[]{0, 0, -1, 0, 0, 0, 0, 1, 0};
         /*viewMatrix_stored = new float[][]{
             {0,2,2},
             {1,5,1},
@@ -96,6 +90,9 @@ public class ObjectBeta implements GLEventListener {
         //inicializa variaveis da camera
         speed_x = speed_y = speed_z = 0.0f;
         rotate_x = rotate_y = rotate_z = 0.0f;
+        theta = 45f;
+        phi = 45f;
+        radius = 1.4142f;
     }
    
     @Override
@@ -114,16 +111,19 @@ public class ObjectBeta implements GLEventListener {
         
         modelMatrix.init(gl,shader.getUniformLocation("u_modelMatrix"));
         projectionMatrix.init(gl, shader.getUniformLocation("u_projectionMatrix"));
-        viewMatrix.init(gl, shader.getUniformLocation("u_viewMatrix"));
+        //viewMatrix.init(gl, shader.getUniformLocation("u_viewMatrix"));
+        cam.init(gl, shader.getUniformLocation("u_viewMatrix"));
         this.go = false;
         try {
             
             main_ship.getObj().getReady(gl, shader);
             main_ship.getObj().addPosition(0.0f, 2.0f, 0.0f);
             moon.getObj().getReady(gl, shader);
+            moon.changePosition(2.0f, 4.0f, -3.0f);
             //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
             earth.getObj().getReady(gl, shader);
-            earth.changePosition(0.0f, 0.0f, 8.0f);
+            earth.changePosition(0.0f, 0.0f, -8.0f);
+           // earth.getObj().addRotation(0, 180, 0);
             this.earth.getObj().addSize(2, 2, 2);
 //            view_ship.getObj().getReady(gl, shader);
             main_ship.getMissileObj().getReady(gl, shader);
@@ -141,7 +141,7 @@ public class ObjectBeta implements GLEventListener {
         
         //init the light
         light.init(gl, shader);
-        light.setPosition(new float[]{10, 10, -50, 1.0f});
+        light.setPosition(new float[]{10, 10, 50, 1.0f});
         light.setAmbientColor(new float[]{0.1f, 0.1f, 0.1f, 1.0f});
         light.setDiffuseColor(new float[]{0.75f, 0.75f, 0.75f, 1.0f});
         light.setSpecularColor(new float[]{0.7f, 0.7f, 0.7f, 1.0f});
@@ -159,7 +159,7 @@ public class ObjectBeta implements GLEventListener {
 
         for(int i=0; i < this.points_stars.length; i++){            
             float pointx=0.0f, pointy=0.0f, pointz=0.0f;
-            while((pointx < 3.0f && pointx > -3.0f) && (pointy < 3.0f && pointy > -3.0f) && (pointz < 3.0f && pointz > -3.0f) ){
+            while((pointx < 7.0f && pointx > -7.0f) && (pointy < 7.0f && pointy > -7.0f) && (pointz < 7.0f && pointz > -7.0f) ){
                 pointx = (random.nextFloat()-0.5f)*20;
                 pointy = (random.nextFloat()-0.5f)*20;
                 pointz = (random.nextFloat()-0.5f)*20;
@@ -209,29 +209,17 @@ public class ObjectBeta implements GLEventListener {
         //projectionMatrix.translate(0.0f, 0.0f, delta);
         projectionMatrix.bind();
         
-        viewMatrix.loadIdentity();
-        viewMatrix.lookAt(this.viewMatrix_stored);
-        viewMatrix.bind();
+        //viewMatrix.loadIdentity();
+       // viewMatrix.lookAt(this.viewMatrix_stored);
+        //viewMatrix.bind();
+        cam.useView();
 
         light.bind();
+
     
     
         this.cameraUpdate();
-        viewMatrix.loadIdentity();
-        //viewMatrix.translate(this.speed_x, this.speed_y, this.speed_z);
-        viewMatrix_stored[0] += this.speed_x;
-        viewMatrix_stored[1] += this.speed_y;
-        viewMatrix_stored[2] += this.speed_z;
-        viewMatrix_stored[3] += this.speed_x;
-        viewMatrix_stored[4] += this.speed_y;
-        viewMatrix_stored[5] += this.speed_z;
-        
-        //viewMatrix.rotate(this.rotate_y, 0, 1, 0);
-        //viewMatrix.rotate(this.rotate_z, 0, 0, 1);
-        viewMatrix.rotate(this.rotate_x, 1, 0, 0);
-        viewMatrix.lookAt(viewMatrix_stored);
-        viewMatrix.bind();
-        
+       
         
         //this.userInput();
         this.sceneUpdate();
@@ -281,6 +269,7 @@ public class ObjectBeta implements GLEventListener {
             this.points_stars[i].draw();
         }
         
+        //moon.getObj().addRotation(0.0f, 0.5f, 0.0f);
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
         modelMatrix.rotate(moon.getObj().getRotation()[0],1,0,0);
@@ -364,94 +353,26 @@ public class ObjectBeta implements GLEventListener {
     }
     
     public void setKeyPressed(){
+        float speed = 0.1f;
+        float rotate = 1.5f;
         if(this.input.getArrowUp()){
-            this.speed_z += 0.05f;
+            cam.move(speed);
         }else if(this.input.getArrowDown()){
-            this.speed_z -= 0.05f;
+            cam.move(-speed);
         }else if(this.input.getArrowLeft()){
-            this.speed_x += 0.05f;
+            cam.rotateY(-rotate);
         }else if(this.input.getArrowRight()){
-            this.speed_x -= 0.05f;
+            cam.rotateY(rotate);
         }else if(this.input.getSpaceBar()){
-            this.speed_y += 0.05f;
+            cam.up(-speed);
         }else if(this.input.getCtrl()){
-            this.speed_y -= 0.05f;
-        }else if(this.input.getQ()){
-            this.rotate_y += 3.0f;
-        }else if(this.input.getE()){
-            this.rotate_y -= 3.0f;
-        }else if(this.input.getW()){
-            this.rotate_x -= 3.0f;
-        }else if(this.input.getS()){
-            this.rotate_x += 3.0f;
-        }else if(this.input.getA()){
-            this.rotate_z += 3.0f;
-        }else if(this.input.getD()){
-            this.rotate_z -= 3.0f;
+            cam.up(speed);
         }
     }
     public void cameraUpdate(){
-        
         this.input.update();
-        
-        //this.rotate_x = 0.0f;
-        this.rotate_y = 0.0f;
-        this.rotate_z = 0.0f;
-        this.speed_x  = 0.0f;
-        this.speed_y  = 0.0f;
-        this.speed_z  = 0.0f;
         this.setKeyPressed();
-      /*
-        if(this.input.getArrowDown()){
-            System.out.println("ARROW DOWN");
-            if(this.input.getShift()){
-                up_down_angle = (up_down_angle-4f)%360;
-            } else {
-                up_down_angle = (up_down_angle-1f)%360;
-            }
-        }
-        
-        if(this.input.getArrowUp()){
-            System.out.println("ARROW UP");
-            if(this.input.getShift()){
-                up_down_angle = (up_down_angle+4f)%360;
-            } else {
-                up_down_angle = (up_down_angle+1f)%360;
-            }
-        }
-        
-        if(this.input.getArrowRight()){
-            System.out.println("ARROW RIGHT");
-            if(this.input.getShift()){
-                left_right_angle = (left_right_angle-4f)%360;
-            } else {
-                left_right_angle = (left_right_angle-1f)%360;
-            }
-        }
-        
-        if(this.input.getArrowLeft()){
-            System.out.println("ARROW LEFT");
-            if(this.input.getShift()){
-                left_right_angle = (left_right_angle+4f)%360;
-            } else {
-                left_right_angle = (left_right_angle+1f)%360;
-            }
-        }
-
-        viewMatrix_stored[1][0] = main_ship.getXShip();
-        viewMatrix_stored[1][1] = main_ship.getYShip();
-        viewMatrix_stored[1][2] = main_ship.getZShip();
-        viewMatrix_stored[0][0] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.cos((left_right_angle * ((Math.PI % 360) / 180)));
-        viewMatrix_stored[0][1] = 2.0f * (float) Math.cos((up_down_angle * ((Math.PI % 360) / 180)));
-        viewMatrix_stored[0][2] = 2.0f * (float) Math.sin((up_down_angle * ((Math.PI % 360) / 180))) * (float) Math.sin((left_right_angle * ((Math.PI % 360) / 180)));
-
-        
-
-        
-        
-        viewMatrix.loadIdentity();
-        viewMatrix.lookAt(viewMatrix_stored);
-        viewMatrix.bind();*/
+        cam.useView();
     }
     
     public InputKey getKeyListener(){
