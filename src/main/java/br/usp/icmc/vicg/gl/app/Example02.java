@@ -29,6 +29,7 @@ public class Example02 implements GLEventListener {
     private final Matrix4 modelMatrix;
     private final SimpleModel triangle;
     private final SimpleModel square;
+    private SimpleModel point;
 
     public Example02() {
         // Carrega os shaders
@@ -36,8 +37,9 @@ public class Example02 implements GLEventListener {
         modelMatrix = new Matrix4();
         triangle = new Triangle();
         square = new Square();
+        point = new Point(0,0.25f,0);
     }
-
+    
     @Override
     public void init(GLAutoDrawable drawable) {
         // Get pipeline
@@ -60,6 +62,7 @@ public class Example02 implements GLEventListener {
         //cria o objeto a ser desenhado
         triangle.init(gl, shader);
         square.init(gl, shader);
+        point.init(gl, shader);
     }
 
     @Override
@@ -86,6 +89,14 @@ public class Example02 implements GLEventListener {
         
         square.bind();
         square.draw(GL3.GL_TRIANGLE_FAN);
+        square.draw();
+        
+        modelMatrix.loadIdentity();
+        //modelMatrix.scale(2.0f, 2.0f, 2.0f);
+        modelMatrix.bind();
+        point.bind();
+        //point.draw(GL3.GL_PO);
+        point.draw();
 
         // Força execução das operações declaradas
         gl.glFlush();
@@ -137,6 +148,24 @@ public class Example02 implements GLEventListener {
         });
         frame.setVisible(true);
         animator.start();
+    }
+    
+    private static class Point extends SimpleModel {
+        float x, y, z;
+        
+        public Point(float x, float y, float z){
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            vertex_buffer = new float[]{x,y,z};//, 0.5f,0.5f,0.5f};
+            normal_buffer = new float[]{0.0f,0.0f,1.0f};//, 0.0f,0.0f,1.0f};
+        }
+        
+
+        @Override
+        public void draw() {
+            draw(GL3.GL_POINTS);
+        }
     }
 
 }

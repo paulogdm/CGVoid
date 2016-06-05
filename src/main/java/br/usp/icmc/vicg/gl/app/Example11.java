@@ -53,7 +53,7 @@ public class Example11 implements GLEventListener {
     // Print OpenGL version
     System.out.println("OpenGL Version: " + gl.glGetString(GL.GL_VERSION) + "\n");
 
-    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     gl.glClearDepth(1.0f);
 
     gl.glEnable(GL.GL_DEPTH_TEST);
@@ -110,7 +110,7 @@ public class Example11 implements GLEventListener {
     gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
     
     material.setAmbientColor(new float[]{1.0f, 1.0f, 1.0f, 0.0f});
-    material.setDiffuseColor(new float[]{1.0f, 1.0f, 1.0f, 0.0f});
+    material.setDiffuseColor(new float[]{0.0f, 1.0f, 0.0f, 0.0f});
     material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
     material.setSpecularExponent(64);
     material.bind();
