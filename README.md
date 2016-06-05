@@ -3,7 +3,8 @@ TODO:
 
 	[] - rotacionar lua entorno da terra
 		Reserva- [] fazer um asteroide grande passar na frente da terra, mostando que há sombra
-	[] - posicionar naves em cima da lua
+	[x] - posicionar naves em cima da lua
+	[] - fazer naves se atirarem
 	[] - explodir uma das naves
 	[] - fazer asteroide
 	[] - fazer particulas saindo do asteroide

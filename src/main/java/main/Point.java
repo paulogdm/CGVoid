@@ -49,4 +49,5 @@ class Point extends SimpleModel {
         public float getZ(){
             return (float) this.z;
         }
+        
     }

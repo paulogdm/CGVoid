@@ -106,4 +106,10 @@ public class SolidSphere extends SimpleModel {
     public float getZ(){
         return (float) this.position.get(2);
     }
+    
+    public void changePosition(float x, float y, float z){
+        this.position.set(0, (float) this.position.get(0) + x);
+        this.position.set(1, (float) this.position.get(1) + y);
+        this.position.set(2, (float) this.position.get(2) + z);
+    }
 }

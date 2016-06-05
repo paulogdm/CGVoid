@@ -79,4 +79,11 @@ public class Camera {
         position_cam.set(1, (float) position_cam.get(1)+amt);
     }
     
+    public void lookDown(float amt){
+        this.rotateXYZ.set(0,(float)this.rotateXYZ.get(0) + amt);
+    }
+    
+    public void lookLeft(float amt){
+        this.rotateXYZ.set(2,(float) this.rotateXYZ.get(2) + amt);
+    }
 }
