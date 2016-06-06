@@ -55,6 +55,8 @@ public class ObjectBeta implements GLEventListener {
     private float left_right_angle;
     private float up_down_angle;
     
+    private Timer timer;
+    
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
 
@@ -81,7 +83,7 @@ public class ObjectBeta implements GLEventListener {
         //earth= new Planet("./data/earth/death/moon.obj");
         
         points_stars = new Point[5000];
-        asteroid = new Asteroid("./data/rock/Rock1/Rock1.obj");
+        asteroid = new Asteroid("./data/rock/Rock/Rock.obj");
         
         landingShip = new MainShip();
         
@@ -96,6 +98,8 @@ public class ObjectBeta implements GLEventListener {
         theta = 45f;
         phi = 45f;
         radius = 1.4142f;
+        
+        timer = new Timer();
     }
    
     @Override
@@ -181,37 +185,22 @@ public class ObjectBeta implements GLEventListener {
         GL3 gl = glad.getGL().getGL3();//pega gl3 pq pega todas as capacidades de mexer no shader
         
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
-        //gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        
         gl.glClearDepth(1.0f);
         // VARIABLE UPDATES ---------------
-        //consertar essa parte q o true eh setado varias vezes em um unico clique!!!!!!
        
         projectionMatrix.loadIdentity();
         projectionMatrix.perspective(70.0f, 1f, 0.01f, 30.0f);
-        /*projectionMatrix.ortho(
-                -2.0f, 2.0f, 
-                -2.0f, 2.0f, 
-                -2 * 2.0f, 2 * 2.0f);*/
-        //projectionMatrix.translate(0.0f, 0.0f, delta);
         projectionMatrix.bind();
         
-        //viewMatrix.loadIdentity();
-       // viewMatrix.lookAt(this.viewMatrix_stored);
-        //viewMatrix.bind();
         cam.useView();
-
         light.bind();
-
-    
-    
+        this.playVideo();
+        //System.out.println(this.timer.getDelta());
         this.cameraUpdate();
        
-        
-        //this.userInput();
         this.sceneUpdate();
         
-        light.bind();
-
         gl.glFlush();
         
         if(this.input.getExit()){
@@ -310,7 +299,11 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         this.landingShip.getObj().draw();
         
-        
+        material.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
+        material.setDiffuseColor(new float[]{1.0f, 0.0f, 0.0f, 0.0f});
+        material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        material.setSpecularExponent(32);
+        material.bind();
         modelMatrix.loadIdentity();
         modelMatrix.translate(asteroid.getObj().getPosition()[0], asteroid.getObj().getPosition()[1], asteroid.getObj().getPosition()[2]);
         modelMatrix.rotate(asteroid.getObj().getRotation()[0],1,0,0);
@@ -389,5 +382,13 @@ public class ObjectBeta implements GLEventListener {
     
     public InputKey getKeyListener(){
         return this.input;
+    }
+    
+    private void playVideo(){
+        int current = this.timer.getDelta();
+        if(current > 30000){
+            this.asteroid.getObj().addPosition(0.0f, -0.01f, -0.01f);
+            this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
+        }
     }
 }
