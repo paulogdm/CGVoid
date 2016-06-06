@@ -45,7 +45,8 @@ public class ObjectBeta implements GLEventListener {
     private MainShip landingShip;
     //private Point[] points_stars;
     private Point[] points_stars;
-    private SolidSphere asteroid;
+    //private SolidSphere asteroid;
+    private Asteroid asteroid;
     
 //    private ship view_ship;
     
@@ -80,7 +81,7 @@ public class ObjectBeta implements GLEventListener {
         //earth= new Planet("./data/earth/death/moon.obj");
         
         points_stars = new Point[5000];
-        asteroid = new SolidSphere(0,0,0);
+        asteroid = new Asteroid("./data/rock/Rock1/Rock1.obj");
         
         landingShip = new MainShip();
         
@@ -136,8 +137,8 @@ public class ObjectBeta implements GLEventListener {
             this.earth.getObj().addSize(2, 2, 2);
             main_ship.getMissileObj().getReady(gl, shader);
             
-            asteroid.init(gl, shader);
-            asteroid.changePosition(0.0f, 5.0f, 0.0f);
+            asteroid.getObj().getReady(gl, shader);
+            asteroid.getObj().addPosition(0.0f, 5.0f, 0.0f);
             
             this.create_stars(gl);
 
@@ -230,10 +231,8 @@ public class ObjectBeta implements GLEventListener {
         for(int i=0; i<this.points_stars.length;i++ ){
             this.points_stars[i].dispose();
         }
-        System.out.println(asteroid.getX());
-        System.out.println(asteroid.getY());
-        System.out.println(asteroid.getZ());
-        this.asteroid.dispose();
+        
+        this.asteroid.getObj().dispose();
     }
     
 
@@ -311,18 +310,15 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         this.landingShip.getObj().draw();
         
-        material.setAmbientColor(new float[]{0.0f, 0.3f, 0.5f, 0.0f});
-        material.setDiffuseColor(new float[]{255.0f/168.0f, 255.0f/168.0f, 255.0f/168.0f, 0.0f});
-        material.setSpecularColor(new float[]{1.0f, 0.0f, 0.0f, 0.0f});
-        material.setSpecularExponent(64);
-        material.bind();
-        this.asteroid.changePosition(0.0f, -0.01f, -0.01f);
+        
         modelMatrix.loadIdentity();
-        modelMatrix.translate(this.asteroid.getX(), this.asteroid.getY(), this.asteroid.getZ());
-        modelMatrix.scale(0.1f, 0.1f, 0.1f);
+        modelMatrix.translate(asteroid.getObj().getPosition()[0], asteroid.getObj().getPosition()[1], asteroid.getObj().getPosition()[2]);
+        modelMatrix.rotate(asteroid.getObj().getRotation()[0],1,0,0);
+        modelMatrix.rotate(asteroid.getObj().getRotation()[1],0,1,0);
+        modelMatrix.rotate(asteroid.getObj().getRotation()[2],0,0,1);
+        modelMatrix.scale(asteroid.getObj().getSize()[0], asteroid.getObj().getSize()[1], asteroid.getObj().getSize()[2]);
         modelMatrix.bind();
-        this.asteroid.bind();
-        this.asteroid.draw();
+        this.asteroid.getObj().draw();
                 
         
         modelMatrix.loadIdentity();

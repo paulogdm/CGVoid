@@ -6,7 +6,7 @@ TODO:
 	[x] - posicionar naves em cima da lua
 	[] - fazer naves se atirarem
 	[] - explodir uma das naves
-	[] - fazer asteroide
+	[x] - fazer asteroide
 	[] - fazer particulas saindo do asteroide
 
 	[] - fazer temporizador
