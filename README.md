@@ -6,6 +6,7 @@ TODO:
 	[x] - posicionar naves em cima da lua
 	[] - fazer nave atirar na outra
 	[] - explodir uma das naves
+	[x] - fazer a nava explidida sumir
 	[x] - fazer asteroide
 	[] - fazer particulas saindo do asteroide
 
@@ -18,3 +19,7 @@ TODO:
 		[] - terra explode
 		[] - lua sai vuando por ai
 
+Infos:
+
+	Tempo para o asteroid chegar na terra: 21.150 milissegundos.
+	Tempo para missil atingir nave: 5.000 milissegundos.

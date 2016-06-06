@@ -43,7 +43,7 @@ public class MainShip extends ObjectContainer{
     
     
     public void shoot(){
-        float position[] = this.missile.getObj().getPosition();
+       /* float position[] = this.missile.getObj().getPosition();
         
         if(position[2] > 5f){
             this.missile.getObj().setPosition(this.getObj().getX(),
@@ -55,7 +55,15 @@ public class MainShip extends ObjectContainer{
             this.missile.getObj().setSpeed(KEEP_VALUE, KEEP_VALUE, 0.1f);
         }
         
-        this.missile.getObj().updatePosition();
+        this.missile.getObj().updatePosition();*/
+         if((float) this.missile.getObj().getX() < 2.5f ){
+            this.missile.getObj().addPosition(this.getObj().getX()+0.1f, this.getObj().getY(), this.getObj().getZ());
+            this.missile.getObj().setSpeed(0f, 0f, 0f);
+            this.missile_is_inside = true;
+        }else{
+            this.missile.getObj().addPosition(this.getObj().getX(), this.getObj().getY(), this.getObj().getZ());
+        }
+       
     }
     
     public boolean getMissileFlag(){

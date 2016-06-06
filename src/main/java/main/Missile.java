@@ -12,7 +12,7 @@ package main;
 public class Missile extends ObjectContainer{
 
     public Missile() {
-        super("./data/Missile.obj");
+        super("./data/bullet/AGM/Files/Missile AGM-65.obj");
         this.getObj().setRotation(0.8f, 0.8f,0);
 
         this.getObj().setSize(0.1f, 0.1f, 0.1f);

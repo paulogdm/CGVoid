@@ -56,6 +56,8 @@ public class ObjectBeta implements GLEventListener {
     private float up_down_angle;
     
     private Timer timer;
+    private boolean close_asteroid;
+    private boolean close_xwing;
     
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
@@ -100,6 +102,8 @@ public class ObjectBeta implements GLEventListener {
         radius = 1.4142f;
         
         timer = new Timer();
+        close_asteroid = false;
+        close_xwing = false;
     }
    
     @Override
@@ -140,9 +144,11 @@ public class ObjectBeta implements GLEventListener {
             earth.getObj().addRotation(0, 180, 0);
             this.earth.getObj().addSize(2, 2, 2);
             main_ship.getMissileObj().getReady(gl, shader);
+            main_ship.getMissileObj().addPosition(1.36f, 5.48f, -3.29f);
+            main_ship.getMissileObj().addRotation(0.0f, 180, 0.0f);
             
             asteroid.getObj().getReady(gl, shader);
-            asteroid.getObj().addPosition(0.0f, 5.0f, 0.0f);
+            asteroid.getObj().addPosition(0.0f, 10.0f, 0.0f);
             
             this.create_stars(gl);
 
@@ -160,9 +166,6 @@ public class ObjectBeta implements GLEventListener {
         material.init(gl, shader);
         
 
-        //viewMatrix.loadIdentity();
-        //viewMatrix.lookAt(viewMatrix_stored);
-        //viewMatrix.bind();
     }
     
     private void create_stars(GL3 gl){
@@ -196,7 +199,7 @@ public class ObjectBeta implements GLEventListener {
         cam.useView();
         light.bind();
         this.playVideo();
-        //System.out.println(this.timer.getDelta());
+        System.out.println(this.timer.getDelta());
         this.cameraUpdate();
        
         this.sceneUpdate();
@@ -232,11 +235,11 @@ public class ObjectBeta implements GLEventListener {
     
     public void sceneUpdate(){
         
-        if(this.input.getSpaceBar() && main_ship.getMissileFlag()){
+       /*if(this.input.getSpaceBar() && main_ship.getMissileFlag()){
             main_ship.toogleMissileFlag();
-        }
+        }*/
         
-        main_ship.shoot();
+        //main_ship.shoot();
         for(int i=0;i<this.points_stars.length; i++){
             /* RED
             material.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
@@ -280,44 +283,46 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         main_ship.getObj().draw();
         
-        modelMatrix.loadIdentity();
-        modelMatrix.translate(main_ship.getMissileObj().getPosition()[0], main_ship.getMissileObj().getPosition()[1], main_ship.getMissileObj().getPosition()[2]);
-        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[0],1,0,0);
-        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[1],0,1,0);
-        modelMatrix.rotate(main_ship.getMissileObj().getRotation()[2],0,0,1);
-        modelMatrix.scale(main_ship.getMissileObj().getSize()[0], main_ship.getMissileObj().getSize()[1], main_ship.getMissileObj().getSize()[2]);
-        modelMatrix.bind();
-        main_ship.getMissileObj().draw();
+        if(!this.close_xwing){
+            modelMatrix.loadIdentity();
+            modelMatrix.translate(main_ship.getMissileObj().getPosition()[0], main_ship.getMissileObj().getPosition()[1], main_ship.getMissileObj().getPosition()[2]);
+            modelMatrix.rotate(main_ship.getMissileObj().getRotation()[0],1,0,0);
+            modelMatrix.rotate(main_ship.getMissileObj().getRotation()[1],0,1,0);
+            modelMatrix.rotate(main_ship.getMissileObj().getRotation()[2],0,0,1);
+            modelMatrix.scale(main_ship.getMissileObj().getSize()[0], main_ship.getMissileObj().getSize()[1], main_ship.getMissileObj().getSize()[2]);
+            modelMatrix.bind();
+            main_ship.getMissileObj().draw();
 
+
+            modelMatrix.loadIdentity();
+            modelMatrix.translate(landingShip.getObj().getPosition()[0], landingShip.getObj().getPosition()[1], landingShip.getObj().getPosition()[2]);
+            modelMatrix.rotate(landingShip.getObj().getRotation()[0],1,0,0);
+            modelMatrix.rotate(landingShip.getObj().getRotation()[1],0,1,0);
+            modelMatrix.rotate(landingShip.getObj().getRotation()[2],0,0,1);
+            modelMatrix.scale(landingShip.getObj().getSize()[0], landingShip.getObj().getSize()[1], landingShip.getObj().getSize()[2]);
+            modelMatrix.bind();
+            this.landingShip.getObj().draw();
+        }
         
-        modelMatrix.loadIdentity();
-        modelMatrix.translate(landingShip.getObj().getPosition()[0], landingShip.getObj().getPosition()[1], landingShip.getObj().getPosition()[2]);
-        modelMatrix.rotate(landingShip.getObj().getRotation()[0],1,0,0);
-        modelMatrix.rotate(landingShip.getObj().getRotation()[1],0,1,0);
-        modelMatrix.rotate(landingShip.getObj().getRotation()[2],0,0,1);
-        modelMatrix.scale(landingShip.getObj().getSize()[0], landingShip.getObj().getSize()[1], landingShip.getObj().getSize()[2]);
-        modelMatrix.bind();
-        this.landingShip.getObj().draw();
-        
-        material.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
-        material.setDiffuseColor(new float[]{1.0f, 0.0f, 0.0f, 0.0f});
-        material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-        material.setSpecularExponent(32);
-        material.bind();
-        modelMatrix.loadIdentity();
-        modelMatrix.translate(asteroid.getObj().getPosition()[0], asteroid.getObj().getPosition()[1], asteroid.getObj().getPosition()[2]);
-        modelMatrix.rotate(asteroid.getObj().getRotation()[0],1,0,0);
-        modelMatrix.rotate(asteroid.getObj().getRotation()[1],0,1,0);
-        modelMatrix.rotate(asteroid.getObj().getRotation()[2],0,0,1);
-        modelMatrix.scale(asteroid.getObj().getSize()[0], asteroid.getObj().getSize()[1], asteroid.getObj().getSize()[2]);
-        modelMatrix.bind();
-        this.asteroid.getObj().draw();
+        if(!this.close_asteroid){
+            material.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
+            material.setDiffuseColor(new float[]{1.0f, 0.0f, 0.0f, 0.0f});
+            material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+            material.setSpecularExponent(32);
+            material.bind();
+            modelMatrix.loadIdentity();
+            modelMatrix.translate(asteroid.getObj().getPosition()[0], asteroid.getObj().getPosition()[1], asteroid.getObj().getPosition()[2]);
+            modelMatrix.rotate(asteroid.getObj().getRotation()[0],1,0,0);
+            modelMatrix.rotate(asteroid.getObj().getRotation()[1],0,1,0);
+            modelMatrix.rotate(asteroid.getObj().getRotation()[2],0,0,1);
+            modelMatrix.scale(asteroid.getObj().getSize()[0], asteroid.getObj().getSize()[1], asteroid.getObj().getSize()[2]);
+            modelMatrix.bind();
+            this.asteroid.getObj().draw();
+        }
                 
         
         modelMatrix.loadIdentity();
         modelMatrix.bind();
-        light.bind();
-        
     }
     
     public void userInput(){
@@ -386,9 +391,16 @@ public class ObjectBeta implements GLEventListener {
     
     private void playVideo(){
         int current = this.timer.getDelta();
-        if(current > 30000){
-            this.asteroid.getObj().addPosition(0.0f, -0.01f, -0.01f);
+        if(current > 42150){
+            this.close_asteroid = true;
+        }else if(current > 20000){
+            this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
+            this.close_xwing = true;
+        }else if(current > 15000){
+            this.close_xwing = true;
+        }else if(current > 10000){
+            this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
         }
     }
 }
