@@ -4,20 +4,22 @@ TODO:
 	[] - rotacionar lua entorno da terra
 		Reserva- [] fazer um asteroide grande passar na frente da terra, mostando que há sombra
 	[x] - posicionar naves em cima da lua
-	[] - fazer nave atirar na outra
+	[x] - fazer nave atirar na outra
 	[] - explodir uma das naves
 	[x] - fazer a nava explidida sumir
 	[x] - fazer asteroide
-	[] - fazer particulas saindo do asteroide
+	[x] - fazer particulas saindo do asteroide
+        [] - fazer foguinho nas particulas
 
 	[x] - fazer temporizador
-		[] - nave explode no segundo X
 		[x] - asteroide se mover no segundo X+X
-		[] - asteroide cria particulas chegando na terra
+		[x] - asteroide cria particulas chegando na terra
 		[] - asteroide some depois que "bate" na terra
-		[] - terra começa a tremer e diminuir
+                [] - terra solta uma camada de energia
+                [] - camera eh acertada pela camada e começa virar
 		[] - terra explode
-		[] - lua sai vuando por ai
+        
+
 
 Infos:
 
