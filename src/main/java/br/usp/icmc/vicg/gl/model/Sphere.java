@@ -57,6 +57,10 @@ public class Sphere extends SimpleModel {
             }
         }
     }
+
+    public Sphere() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     @Override
     public void draw() {
