@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
 import java.util.Random;
+import java.util.Vector;
 
 public class ObjectBeta implements GLEventListener {
     
@@ -58,6 +59,8 @@ public class ObjectBeta implements GLEventListener {
     private Timer timer;
     private boolean close_asteroid;
     private boolean close_xwing;
+    
+    private ParticleEmitter fireAsteroid;
     
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
@@ -104,6 +107,8 @@ public class ObjectBeta implements GLEventListener {
         timer = new Timer();
         close_asteroid = false;
         close_xwing = false;
+        
+       
     }
    
     @Override
@@ -165,6 +170,15 @@ public class ObjectBeta implements GLEventListener {
         light.bind();
         material.init(gl, shader);
         
+        //create particles
+        Vector location_p = new Vector(3); location_p.add(0.0f); location_p.add(0.0f); location_p.add(0.0f);
+        float swapingRate = 3;
+        int particleLifeTime = 300;
+        Vector gravity_p = new Vector(3); gravity_p.add(0.0f); gravity_p.add(-0.0003f); gravity_p.add(0.0f);
+        Vector initialVelocity_p = new Vector(3); initialVelocity_p.add(0.0f); initialVelocity_p.add(0.0f); initialVelocity_p.add(0.0f);
+        float velocityModifier = 1.0f;
+        this.fireAsteroid = new ParticleEmitter(location_p, swapingRate, particleLifeTime, gravity_p, initialVelocity_p, velocityModifier, modelMatrix,gl, shader);
+        
 
     }
     
@@ -178,7 +192,9 @@ public class ObjectBeta implements GLEventListener {
                 pointy = (random.nextFloat()-0.5f)*20;
                 pointz = (random.nextFloat()-0.5f)*20;
             }
-            this.points_stars[i] = new Point(pointx, pointy, pointz, gl);
+            //this.points_stars[i] = new Point(pointx, pointy, pointz, gl);
+            this.points_stars[i] = new Point(pointx, pointy, pointz);
+            this.points_stars[i].setPointSize(1.5f, gl);
             this.points_stars[i].init(gl, shader);
         }
 
@@ -247,12 +263,11 @@ public class ObjectBeta implements GLEventListener {
             material.setSpecularColor(new float[]{0.9f, 0.9f, 0.9f, 0.0f});
             material.setSpecularExponent(32);
             material.bind();*/
-            modelMatrix.loadIdentity();
-            modelMatrix.translate(this.points_stars[i].getX(), this.points_stars[i].getY(), this.points_stars[i].getZ());
-            modelMatrix.bind();
-            this.points_stars[i].bind();
-            this.points_stars[i].draw();
+            this.points_stars[i].update( modelMatrix);
         }
+        
+        this.fireAsteroid.update();
+        this.fireAsteroid.draw(material);
         
         moon.getObj().addRotation(0.0f, 0.07f, 0.0f);
         modelMatrix.loadIdentity();
