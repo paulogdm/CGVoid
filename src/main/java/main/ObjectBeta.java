@@ -65,6 +65,8 @@ public class ObjectBeta implements GLEventListener {
     private boolean start_fireAsteroid;
     private ParticleEmitter fireSpaceShip;
     private boolean start_fireSpaceShip;
+    private ParticleEmitter fireMissile;
+    private boolean start_fireMissile;
     
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
@@ -113,6 +115,7 @@ public class ObjectBeta implements GLEventListener {
         close_xwing = false;
         start_fireAsteroid = false;
         start_fireSpaceShip = false;
+        start_fireMissile = false;
        
     }
    
@@ -177,6 +180,19 @@ public class ObjectBeta implements GLEventListener {
         material.init(gl, shader);
         
         
+        
+                //(2.5f,5.5f, -3.0f
+        Vector location_m = new Vector(3); location_m.add(2.3f/2.0f); location_m.add(5.5f/2.0f); location_m.add(-3f/2.0f);
+        float swapingRate_m = 3;
+        int particleLifeTime_m = 40;
+        Vector gravity_m = new Vector(3); gravity_m.add(0.0f); gravity_m.add(-0.003f); gravity_m.add(0.0f);
+        Vector initialVelocity_m = new Vector(3); initialVelocity_m.add(0.0f); initialVelocity_m.add(1.0f); initialVelocity_m.add(0.0f);
+        float velocityModifier_m = 0.5f;
+        this.fireMissile = new ParticleEmitter(location_m, swapingRate_m, particleLifeTime_m, gravity_m, initialVelocity_m, velocityModifier_m, modelMatrix,gl, shader);
+        this.fireMissile.setEspaceChange(0.8f, 0.8f, 0.8f);
+
+        
+        
         Vector location_s = new Vector(3); location_s.add(1.2f/2.0f); location_s.add(5.52f/2.0f); location_s.add(-2.8f/2.0f);
         float swapingRate_s = 3;
         int particleLifeTime_s = 40;
@@ -189,12 +205,14 @@ public class ObjectBeta implements GLEventListener {
         //create particles
         Vector location_p = new Vector(3); location_p.add(0.0f); location_p.add(4.9f); location_p.add(-0.2f);
         float swapingRate = 6;
-        int particleLifeTime = 100;
-        Vector gravity_p = new Vector(3); gravity_p.add(0.0f); gravity_p.add(-0.0007f); gravity_p.add(0.0f);
-        Vector initialVelocity_p = new Vector(3); initialVelocity_p.add(0.0f); initialVelocity_p.add(0.0f); initialVelocity_p.add(0.0f);
+        int particleLifeTime = 50;
+        Vector gravity_p = new Vector(3); gravity_p.add(0.0f); gravity_p.add(0.0f); gravity_p.add(0.1f);
+        Vector initialVelocity_p = new Vector(3); initialVelocity_p.add(0.5f); initialVelocity_p.add(0.5f); initialVelocity_p.add(0.0f);
         float velocityModifier = 1.5f;
         this.fireAsteroid = new ParticleEmitter(location_p, swapingRate, particleLifeTime, gravity_p, initialVelocity_p, velocityModifier, modelMatrix,gl, shader);
+        this.fireAsteroid.setEspaceChange(0.1f, 0.1f, 0.1f);
         
+
         
 
     }
@@ -357,7 +375,11 @@ public class ObjectBeta implements GLEventListener {
             this.fireAsteroid.update();
             this.fireAsteroid.draw(material, false);
         }
-                
+        
+        if(start_fireMissile){
+            this.fireMissile.update();
+            this.fireMissile.draw(material, false);
+        }
         
         modelMatrix.loadIdentity();
         modelMatrix.bind();
@@ -449,6 +471,11 @@ public class ObjectBeta implements GLEventListener {
             this.main_ship.getObj().addRotation(0f, 1f, 0f);
         }else if(current > 14000){
             this.close_xwing = true;
+            this.start_fireMissile = false;
+        }else if(current > 12500){
+            this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
+            this.fireMissile.setLocation(0.01f/2.0f, 0.0005f/2.0f, 0.0f);
+            this.start_fireMissile = true;
         }else if(current > 10000){
             this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
         }

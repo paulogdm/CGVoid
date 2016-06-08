@@ -14,7 +14,7 @@ TODO:
 	[x] - fazer temporizador
 		[x] - asteroide se mover no segundo X+X
 		[x] - asteroide cria particulas chegando na terra
-		[] - asteroide some depois que "bate" na terra
+		[x] - asteroide some depois que "bate" na terra
                 [] - terra solta uma camada de energia
                 [] - camera eh acertada pela camada e começa virar
 		[] - terra explode

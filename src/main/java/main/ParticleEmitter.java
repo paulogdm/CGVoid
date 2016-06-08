@@ -31,6 +31,7 @@ public class ParticleEmitter {
     private Matrix4 modelMatrix;
     private GL3 gl;
     private Shader shader;
+    private Vector espace_change;
     
     public ParticleEmitter(Vector location, float swapingRate, int particleLifeTime, Vector gravity,
                                                 Vector initialVelocity, float velocityModifier, Matrix4 modelMatrix, GL3 gl, Shader shader){
@@ -44,6 +45,8 @@ public class ParticleEmitter {
         this.modelMatrix = modelMatrix;
         this.gl = gl;
         this.shader = shader;
+        this.espace_change = new Vector();
+        this.espace_change.add(0.5f); this.espace_change.add(0.5f); this.espace_change.add(0.5f);
     }
     
     public float getVelocityModifier(){
@@ -105,18 +108,27 @@ public class ParticleEmitter {
         Vector particleLocation = new Vector(location);
         Vector particleVelocity = new Vector();
         
-        float randomX = (float) randomGenerator.nextDouble() - 0.3f;
-        float randomY = (float) randomGenerator.nextDouble() - 0.3f;
-        float randomZ = (float) randomGenerator.nextDouble() - 0.3f;
+        float randomX = (float) randomGenerator.nextDouble() - (float) espace_change.get(0);
+        float randomY = (float) randomGenerator.nextDouble() - (float) espace_change.get(1);
+        float randomZ = (float) randomGenerator.nextDouble() - (float) espace_change.get(2);
         
         particleVelocity.add( (randomX +(float) this.initialVelocity.get(0) + dx/10)/40 );
-        particleVelocity.add( (randomY +(float) this.initialVelocity.get(1) + dy/10)/40 );
-        particleVelocity.add( (randomZ +(float) this.initialVelocity.get(2))/120 );
-        
+        if(randomGenerator.nextBoolean())
+            particleVelocity.add( (randomY +(float) this.initialVelocity.get(1) + dy/10)/40 );
+        else
+            particleVelocity.add( (randomY -(float) this.initialVelocity.get(1) + dy/10)/40 );
+        particleVelocity.add( (randomZ +(float) this.initialVelocity.get(2))/40 );
         Point p = new Point(particleLocation, particleVelocity, particleLifeTime);
         p.init(gl, shader);
         return p;
     }
+    
+    public void setEspaceChange(float x, float y, float z){
+        this.espace_change.set(0, x);
+        this.espace_change.set(0, y);
+        this.espace_change.set(0, z);
+    }
+    
     
     public void update() {
         System.out.println("particle size: "+particles.size());
