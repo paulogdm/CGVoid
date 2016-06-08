@@ -68,6 +68,16 @@ public class ObjectBeta implements GLEventListener {
     private ParticleEmitter fireMissile;
     private boolean start_fireMissile;
     
+    private AsteroidEmitter earth_down;
+    private boolean stop_earth;
+    private boolean start_earth_down;
+    
+    private SolidSphere wave;
+    private boolean start_wave;
+    
+    private boolean shakeLeft;
+    private float roll;
+    
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
 
@@ -96,6 +106,8 @@ public class ObjectBeta implements GLEventListener {
         points_stars = new Point[5000];
         asteroid = new Asteroid("./data/rock/Rock/Rock.obj");
         
+        
+    
         landingShip = new MainShip();
         
         input = new InputKey();
@@ -116,6 +128,13 @@ public class ObjectBeta implements GLEventListener {
         start_fireAsteroid = false;
         start_fireSpaceShip = false;
         start_fireMissile = false;
+        stop_earth = false;
+        start_earth_down = false;
+        
+        wave = new SolidSphere(0.0f, 0.0f, -8.0f);
+        start_wave = false;
+        shakeLeft = false;
+        roll = -15.7f;
        
     }
    
@@ -154,7 +173,7 @@ public class ObjectBeta implements GLEventListener {
             //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
             earth.getObj().getReady(gl, shader);
             earth.changePosition(0.0f, 0.0f, -8.0f);
-            earth.getObj().addRotation(0, 180, 0);
+            earth.getObj().addRotation(0, 90, 0);
             this.earth.getObj().addSize(2, 2, 2);
             main_ship.getMissileObj().getReady(gl, shader);
             main_ship.getMissileObj().addPosition(1.36f, 5.48f, -3.29f);
@@ -162,7 +181,9 @@ public class ObjectBeta implements GLEventListener {
             
             asteroid.getObj().getReady(gl, shader);
             asteroid.getObj().addPosition(0.0f, 10.0f, 0.0f);
-            asteroid.getObj().addSize(0.01f, 0.01f, 0.01f);
+            asteroid.getObj().addSize(-0.5f, -0.5f, -0.5f);
+            
+            wave.init(gl, shader);
             
             this.create_stars(gl);
 
@@ -203,18 +224,25 @@ public class ObjectBeta implements GLEventListener {
         
         
         //create particles
-        Vector location_p = new Vector(3); location_p.add(0.0f); location_p.add(4.9f); location_p.add(-0.2f);
+        Vector location_p = new Vector(3); location_p.add(0.0f); location_p.add(4.9f); location_p.add(-0.1f);
         float swapingRate = 6;
         int particleLifeTime = 50;
-        Vector gravity_p = new Vector(3); gravity_p.add(0.0f); gravity_p.add(0.0f); gravity_p.add(0.1f);
+        Vector gravity_p = new Vector(3); gravity_p.add(0.0f); gravity_p.add(0f); gravity_p.add(0.2f);
         Vector initialVelocity_p = new Vector(3); initialVelocity_p.add(0.5f); initialVelocity_p.add(0.5f); initialVelocity_p.add(0.0f);
         float velocityModifier = 1.5f;
         this.fireAsteroid = new ParticleEmitter(location_p, swapingRate, particleLifeTime, gravity_p, initialVelocity_p, velocityModifier, modelMatrix,gl, shader);
         this.fireAsteroid.setEspaceChange(0.1f, 0.1f, 0.1f);
         
 
-        
-
+        Vector location_a = new Vector(3); location_a.add(0.0f); location_a.add(1f); location_a.add(-6f);
+        float swapingRate_a = 50;
+        int particleLifeTime_a = 50000;
+        Vector gravity_a = new Vector(3); gravity_a.add(0.0f); gravity_a.add(-0.001f); gravity_a.add(0.0f);
+        Vector initialVelocity_a = new Vector(3); initialVelocity_a.add(0f); initialVelocity_a.add(0f); initialVelocity_a.add(0.0f);
+        float velocityModifier_a = 1f;
+        this.earth_down = new AsteroidEmitter(location_a, swapingRate_a, particleLifeTime_a, gravity_a, initialVelocity_a, velocityModifier_a, modelMatrix, gl, shader,"./data/rock/Rock/Rock.obj" );
+    
+    timer.init();
     }
     
     private void create_stars(GL3 gl){
@@ -313,15 +341,17 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         moon.getObj().draw();
         
-        earth.getObj().addRotation(0.0f, 0.03f, 0.0f);
-        modelMatrix.loadIdentity();
-        modelMatrix.translate(earth.getObj().getPosition()[0], earth.getObj().getPosition()[1], earth.getObj().getPosition()[2]);
-        modelMatrix.rotate(earth.getObj().getRotation()[0],1,0,0);
-        modelMatrix.rotate(earth.getObj().getRotation()[1],0,1,0);
-        modelMatrix.rotate(earth.getObj().getRotation()[2],0,0,1);
-        modelMatrix.scale(earth.getObj().getSize()[0], earth.getObj().getSize()[1], earth.getObj().getSize()[2]);
-        modelMatrix.bind();
-        earth.getObj().draw();
+        if(!this.stop_earth){
+            earth.getObj().addRotation(0.0f, 0.03f, 0.0f);
+            modelMatrix.loadIdentity();
+            modelMatrix.translate(earth.getObj().getPosition()[0], earth.getObj().getPosition()[1], earth.getObj().getPosition()[2]);
+            modelMatrix.rotate(earth.getObj().getRotation()[0],1,0,0);
+            modelMatrix.rotate(earth.getObj().getRotation()[1],0,1,0);
+            modelMatrix.rotate(earth.getObj().getRotation()[2],0,0,1);
+            modelMatrix.scale(earth.getObj().getSize()[0], earth.getObj().getSize()[1], earth.getObj().getSize()[2]);
+            modelMatrix.bind();
+            earth.getObj().draw();
+        }
         
         if(!this.close_mainship){
             modelMatrix.loadIdentity();
@@ -379,6 +409,25 @@ public class ObjectBeta implements GLEventListener {
         if(start_fireMissile){
             this.fireMissile.update();
             this.fireMissile.draw(material, false);
+        }
+        
+        if(start_earth_down){
+            this.earth_down.update();
+            this.earth_down.draw(material, false);
+        }
+        
+        if(start_wave){
+            material.setAmbientColor(new float[]{0.0f, 0.0f, 0.0f, 0.3f});
+            material.setDiffuseColor(new float[]{0.0f, 0.0f, 1.0f, 0.3f});
+            material.setSpecularColor(new float[]{0.3f, 0.3f, 0.3f, 0.3f});
+            material.setSpecularExponent(32);
+            material.bind();
+            modelMatrix.loadIdentity();
+            modelMatrix.translate(this.wave.getX(), this.wave.getY(), this.wave.getZ());
+            modelMatrix.scale(wave.getSizeX(), wave.getSizeY(), wave.getSizeZ());
+            modelMatrix.bind();
+            this.wave.bind();
+            this.wave.draw();
         }
         
         modelMatrix.loadIdentity();
@@ -451,11 +500,32 @@ public class ObjectBeta implements GLEventListener {
     
     private void playVideo(){
         int current = this.timer.getDelta();
-        if(current > 44000){
-            this.start_fireAsteroid = false;
-        }else if(current > 42150){
+        if(current > 39650){
             this.close_asteroid = true;
-        }else if(current > 20000){
+            this.stop_earth = true;
+            this.start_fireAsteroid = false;
+            this.rollCam();
+        }else if(current > 39100){
+            this.start_earth_down = true;
+            this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
+            this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
+            this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
+            //wave comeca a agir
+            this.earth.getObj().addSize(0.35f, 0.35f, 0.35f);
+            //this.start_wave = true;
+            //this.wave.addSize(0.3f,0.3f,0.3f);
+            this.rollCam();
+        }else if(current > 38000){ // pedacos da terra sao soltos
+            this.start_earth_down = true;
+            this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
+            this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
+            this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
+            //wave comeca a agir
+           // this.start_wave = true;
+            this.earth.getObj().addSize(0.3f, 0.3f, 0.3f);
+            //this.wave.addSize(0.3f,0.3f,0.3f);
+            this.shakeCam();
+        }else if(current > 20000){//nave some, asteroid comeca a ir para a terra
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
             this.start_fireAsteroid = true;
@@ -463,21 +533,37 @@ public class ObjectBeta implements GLEventListener {
             //this.close_xwing = true;
             this.close_mainship = true;
             this.start_fireSpaceShip = false;
-        }else if(current > 18000){
+        }else if(current > 18000){//nave vai embora
             this.start_fireSpaceShip = true;
             this.main_ship.getObj().addPosition(0.0f, 0.0f, -0.2f);
             this.fireSpaceShip.setLocation(0.0f, 0.0f, -(0.2f/2.0f));
-        }else if(current > 15000){
+        }else if(current > 15000){//nave rotaciona
             this.main_ship.getObj().addRotation(0f, 1f, 0f);
-        }else if(current > 14000){
+        }else if(current > 14000){//cancela a nave atingida, o missil e as faiscas
             this.close_xwing = true;
             this.start_fireMissile = false;
-        }else if(current > 12500){
+        }else if(current > 12500){ //missel encosta na outra nave e sai faisca
             this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
             this.fireMissile.setLocation(0.01f/2.0f, 0.0005f/2.0f, 0.0f);
             this.start_fireMissile = true;
-        }else if(current > 10000){
+        }else if(current > 10000){ //missil eh desparado
             this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
+        }
+    }
+    
+    private void shakeCam(){
+        if(this.shakeLeft){
+            cam.lookLeft(2f);
+        }else{
+            cam.lookLeft(-2f);
+        }
+        this.shakeLeft = !this.shakeLeft;
+    }
+    
+    private void rollCam(){
+        if(this.roll < 0){
+            cam.lookDown(this.roll);
+            this.roll += 0.05;
         }
     }
 }

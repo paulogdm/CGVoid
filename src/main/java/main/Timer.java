@@ -15,7 +15,10 @@ public class Timer {
     
     public Timer(){
         lastFrame = 0;
-        firstFrame = this.getTime();
+    }
+    
+    public void init(){
+        firstFrame  = this.getTime();
     }
     
     private long getTime(){

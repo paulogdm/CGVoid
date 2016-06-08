@@ -19,7 +19,7 @@ public class SolidSphere extends SimpleModel {
   private final int ROVNOBEZIEK = 18;
   private final double UHOL_KROK = ((2 * Math.PI / 360.0) * 10.0);
   private Vector position;
-
+    private Vector size;
   public SolidSphere(float px, float py, float pz) {
     ArrayList<Float> vertex = new ArrayList<>();
     
@@ -27,6 +27,9 @@ public class SolidSphere extends SimpleModel {
     this.position.add(px);
     this.position.add(py);
     this.position.add(pz);
+    
+    this.size = new Vector(3);
+    this.size.add(1.0f);this.size.add(1.0f);this.size.add(1.0f);
         
     int p2 = POLUDNIKOV / 2;
     int r2 = ROVNOBEZIEK / 2;
@@ -111,5 +114,21 @@ public class SolidSphere extends SimpleModel {
         this.position.set(0, (float) this.position.get(0) + x);
         this.position.set(1, (float) this.position.get(1) + y);
         this.position.set(2, (float) this.position.get(2) + z);
+    }
+    
+    public float getSizeX(){
+        return (float) this.size.get(0);
+    }
+    public float getSizeY(){
+        return (float) this.size.get(1);
+    }
+    public float getSizeZ(){
+        return (float) this.size.get(2);
+    }
+    
+    public void addSize(float x, float y, float z){
+        this.size.set(0, (float)this.size.get(0)+x);
+        this.size.set(1, (float)this.size.get(1)+y);
+        this.size.set(2, (float)this.size.get(2)+z);
     }
 }

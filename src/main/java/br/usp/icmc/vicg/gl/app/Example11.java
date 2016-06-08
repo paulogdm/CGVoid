@@ -108,7 +108,7 @@ public class Example11 implements GLEventListener {
 
     // Limpa o frame buffer com a cor definida
     gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
-    
+    /*
     material.setAmbientColor(new float[]{1.0f, 1.0f, 1.0f, 0.0f});
     material.setDiffuseColor(new float[]{0.0f, 1.0f, 0.0f, 0.0f});
     material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
@@ -120,11 +120,11 @@ public class Example11 implements GLEventListener {
     modelMatrix.bind();
     
     sphere.bind();
-    sphere.draw();
+    sphere.draw();*/
 
-    material.setAmbientColor(new float[]{0.0f, 0.0f, 1.0f, 0.25f});
-    material.setDiffuseColor(new float[]{0.0f, 0.0f, 1.0f, 0.25f});
-    material.setSpecularColor(new float[]{0.9f, 0.9f, 0.9f, 0.25f});
+    material.setAmbientColor(new float[]{0.0f, 0.0f, 0.0f, 0.3f});
+    material.setDiffuseColor(new float[]{0.0f, 0.0f, 1.0f, 0.3f});
+    material.setSpecularColor(new float[]{0.3f, 0.3f, 0.3f, 0.3f});
     material.setSpecularExponent(32);
     material.bind();
 
