@@ -62,6 +62,12 @@ public class ParticleEmitter {
         this.location = location;
     }
     
+    public void setLocation(float x, float y, float z){
+        this.location.set(0, (float)this.location.get(0) + x);
+        this.location.set(1, (float)this.location.get(1) + y);
+        this.location.set(2, (float)this.location.get(2) + z);
+    }
+    
     public float getSwapingRate(){
         return swapwingRate;
     }
@@ -99,14 +105,14 @@ public class ParticleEmitter {
         Vector particleLocation = new Vector(location);
         Vector particleVelocity = new Vector();
         
-        float randomX = (float) randomGenerator.nextDouble() - 0.5f;
-        float randomY = (float) randomGenerator.nextDouble() - 0.5f;
-        float randomZ = (float) randomGenerator.nextDouble() - 0.5f;
+        float randomX = (float) randomGenerator.nextDouble() - 0.3f;
+        float randomY = (float) randomGenerator.nextDouble() - 0.3f;
+        float randomZ = (float) randomGenerator.nextDouble() - 0.3f;
         
-        particleVelocity.add( (randomX +(float) this.initialVelocity.get(0) + dx/10)/120 );
-        particleVelocity.add( (randomY +(float) this.initialVelocity.get(1) + dy/10)/120 );
+        particleVelocity.add( (randomX +(float) this.initialVelocity.get(0) + dx/10)/40 );
+        particleVelocity.add( (randomY +(float) this.initialVelocity.get(1) + dy/10)/40 );
         particleVelocity.add( (randomZ +(float) this.initialVelocity.get(2))/120 );
-        //MUDAR VELOCIDADE PELO VELOCITYMODIFIER NA HORA
+        
         Point p = new Point(particleLocation, particleVelocity, particleLifeTime);
         p.init(gl, shader);
         return p;
@@ -116,7 +122,7 @@ public class ParticleEmitter {
         System.out.println("particle size: "+particles.size());
         for(int i = 0; i < particles.size(); i++){
             Point point = particles.get(i);
-            point.update(gravity, modelMatrix);
+            point.update(gravity);
             if(point.isDestroyed()){
                 particles.remove(i);
                 i--;
@@ -128,9 +134,10 @@ public class ParticleEmitter {
         }
     }
     
-    public void draw(Material material){
+    public void draw(Material material, boolean useMaterial){
         for(Point point: particles){
-            point.update(gravity, modelMatrix);
+           
+           point.draw(modelMatrix,true, material, true);
         }
     }
     

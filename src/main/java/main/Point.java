@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package main;
+import br.usp.icmc.vicg.gl.core.Material;
 import br.usp.icmc.vicg.gl.matrix.Matrix4;
 import br.usp.icmc.vicg.gl.model.SimpleModel;
 import static java.io.FileDescriptor.in;
@@ -75,22 +76,27 @@ class Point extends SimpleModel {
         
         //NAO FOI IMPLEMENTADO O UPDATE
         
-        public void update(Vector gravity, Matrix4 modelMatrix){
-            modelMatrix.loadIdentity();
+        public void update(Vector gravity){
             
-            modelMatrix.translate((float)velocity.get(0), (float)velocity.get(1), (float)velocity.get(2));
-            modelMatrix.translate((float)gravity.get(0), (float)gravity.get(1), (float)gravity.get(2));
+            //modelMatrix.translate((float)velocity.get(0), (float)velocity.get(1), (float)velocity.get(2));
+            //modelMatrix.translate((float)gravity.get(0), (float)gravity.get(1), (float)gravity.get(2));
+            this.addPosition((float)velocity.get(0), (float)velocity.get(1), (float)velocity.get(2));
+            this.addPosition((float)gravity.get(0), (float)gravity.get(1), (float)gravity.get(2));
             expireTime -=1;
-            
+        }
+        
+        public void draw( Matrix4 modelMatrix, boolean isParticle, Material material, boolean isMaterial){
+            modelMatrix.loadIdentity();
+            if(isParticle)
+                modelMatrix.translate((float) this.position.get(0), (float) this.position.get(1), (float) this.position.get(2));
             modelMatrix.bind();
             this.bind();
             this.draw();
         }
         
-        public void update( Matrix4 modelMatrix){
-            modelMatrix.loadIdentity();
-            modelMatrix.bind();
-            this.bind();
-            this.draw();
+        private void addPosition(float x, float y, float z){
+            this.position.set(0, (float) this.position.get(0) + x);
+            this.position.set(1, (float) this.position.get(1) + y);
+            this.position.set(2, (float) this.position.get(2) + z);
         }
     }
