@@ -20,8 +20,6 @@ import java.io.IOException;
 public class Planet extends ObjectContainer{
 
     public  Planet(String planet){
-        //super("./data/planet/planet2.obj");
-        //super("./data/earth/Moon/moon.obj");
         super(planet);
         this.obj.setPosition(1.5f, 0.0f, 2.0f);
     }

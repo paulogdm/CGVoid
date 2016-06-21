@@ -35,17 +35,17 @@ public class ParticleEmitter {
     
     public ParticleEmitter(Vector location, float swapingRate, int particleLifeTime, Vector gravity,
                                                 Vector initialVelocity, float velocityModifier, Matrix4 modelMatrix, GL3 gl, Shader shader){
-        this.location = location;
-        this.swapwingRate = swapingRate;
-        this.particleLifeTime = particleLifeTime;
-        this.gravity = gravity;
-        this.particles = new ArrayList<Point>((int) swapingRate * particleLifeTime);
+        this.location = location; //posicao que o sistema de particulas
+        this.swapwingRate = swapingRate;//quantidade de particulas criadas por update
+        this.particleLifeTime = particleLifeTime;//tempo de duracao de uma particula
+        this.gravity = gravity;//gravidade(direcao para onde a particula cai)
+        this.particles = new ArrayList<Point>((int) swapingRate * particleLifeTime);//todas as particulas
         this.initialVelocity = initialVelocity;
         this.velocityModifier = velocityModifier;
-        this.modelMatrix = modelMatrix;
-        this.gl = gl;
-        this.shader = shader;
-        this.espace_change = new Vector();
+        this.modelMatrix = modelMatrix;//necessario para dar draw
+        this.gl = gl;//draw
+        this.shader = shader;//draw
+        this.espace_change = new Vector();//ajuda a gerar a particular envolta da localizacao do systema(ver generateNewParticle)
         this.espace_change.add(0.5f); this.espace_change.add(0.5f); this.espace_change.add(0.5f);
     }
     
@@ -103,7 +103,12 @@ public class ParticleEmitter {
         this.initialVelocity = initialVelocity;
     }
 
-    
+     /* cria uma nova particula
+     * primeiro pega x, y e z em uma distancia aleatoria da localizacao inicial 
+     * gera o asteroid na posicao inicial + randomX/Y/Z para as particulas nao iniciarem no mesmo lugar
+     * na criacao do randX/Y/Z é criado entre -0.5 e +0.5
+     * ja que nexDouble retorna entre 0.0 e -1.0 e espace_change inicializa com 0.5 em todas coordenadas
+     */
     public Point generateNewParticle(int dx, int dy){
         Vector particleLocation = new Vector(location);
         Vector particleVelocity = new Vector();
@@ -130,6 +135,11 @@ public class ParticleEmitter {
     }
     
     
+    /*
+        para cada particula eh chamado o update
+        se a particula tiver tempo igual a zero entao remove ela do sistema
+        cria n particulas novas(n==swapwingRate)
+    */
     public void update() {
         System.out.println("particle size: "+particles.size());
         for(int i = 0; i < particles.size(); i++){
@@ -145,7 +155,9 @@ public class ParticleEmitter {
             System.out.println("criate particle "+i);
         }
     }
-    
+    /*
+        redesenha as particulas do sistema
+    */
     public void draw(Material material, boolean useMaterial){
         for(Point point: particles){
            

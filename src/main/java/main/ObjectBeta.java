@@ -25,12 +25,13 @@ import java.util.Random;
 import java.util.Vector;
 
 public class ObjectBeta implements GLEventListener {
-    
+    //bases para o sistema
     private Shader shader;
     private Matrix4 modelMatrix;//Matrix4 é implementacao da primeira e da segunda prova
     private Matrix4 projectionMatrix;
     private Light light;
     private Material material;
+    
     private boolean go;
     
     //variaveis para camera
@@ -39,44 +40,40 @@ public class ObjectBeta implements GLEventListener {
     private float rotate_x, rotate_y, rotate_z;
     private float radius, phi, theta;
     
-    private SimpleObject planet;
+    private SimpleObject planet;//nao sei se eh usado
     
+    //objetos da cena
     private MainShip main_ship;
     private Planet moon, earth;
     private MainShip landingShip;
-    //private Point[] points_stars;
     private Point[] points_stars;
-    //private SolidSphere asteroid;
     private Asteroid asteroid;
+    private ParticleEmitter fireAsteroid;
+    private ParticleEmitter fireSpaceShip;
+    private ParticleEmitter fireMissile;
+    private AsteroidEmitter earth_down;
     
-//    private ship view_ship;
-    
+    //ajuda na camera/video
+    private float roll;//faz camera girar no final do 'video'
     private final InputKey input;
-    
     private float left_right_angle;
     private float up_down_angle;
-    
     private Timer timer;
+    
+    //para saber o que mostrar ou nao dado um certo tempo de cena 
     private boolean close_asteroid;
     private boolean close_xwing;
     private boolean close_mainship;
-    
-    private ParticleEmitter fireAsteroid;
     private boolean start_fireAsteroid;
-    private ParticleEmitter fireSpaceShip;
     private boolean start_fireSpaceShip;
-    private ParticleEmitter fireMissile;
     private boolean start_fireMissile;
-    
-    private AsteroidEmitter earth_down;
     private boolean stop_earth;
     private boolean start_earth_down;
     
-    private SolidSphere wave;
+    private SolidSphere wave;//nao foi utilizado
     private boolean start_wave;
     
     private boolean shakeLeft;
-    private float roll;
     
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
@@ -85,13 +82,6 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
         cam = new Camera();
-        //viewMatrix = new Matrix4();
-        //viewMatrix_stored = new float[]{0, 0, -1, 0, 0, 0, 0, 1, 0};
-        /*viewMatrix_stored = new float[][]{
-            {0,2,2},
-            {1,5,1},
-            {0, 1,0}
-        };*/
         
         light = new Light();
         material = new Material();
@@ -100,10 +90,8 @@ public class ObjectBeta implements GLEventListener {
         
         moon = new Planet("./data/earth/Moon/moon.obj");
         earth = new Planet("./data/earth/Earth/moon.obj");
-        //earth = new Planet(".data/earth/death/dearth-star-II.obj");
-        //earth= new Planet("./data/earth/death/moon.obj");
         
-        points_stars = new Point[5000];
+        points_stars = new Point[5000];//nao foi usado sistema de particulas para fazer as estrelas
         asteroid = new Asteroid("./data/rock/Rock/Rock.obj");
         
         
@@ -115,7 +103,7 @@ public class ObjectBeta implements GLEventListener {
         left_right_angle = 270;
         up_down_angle = 90;
         
-        //inicializa variaveis da camera
+        
         speed_x = speed_y = speed_z = 0.0f;
         rotate_x = rotate_y = rotate_z = 0.0f;
         theta = 45f;
@@ -143,7 +131,6 @@ public class ObjectBeta implements GLEventListener {
     public void init(GLAutoDrawable glad) {
         GL3 gl = glad.getGL().getGL3();//
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         gl.glClearDepth(1.0f);
         
         gl.glEnable(GL.GL_DEPTH_TEST);
@@ -154,37 +141,41 @@ public class ObjectBeta implements GLEventListener {
         
         modelMatrix.init(gl,shader.getUniformLocation("u_modelMatrix"));
         projectionMatrix.init(gl, shader.getUniformLocation("u_projectionMatrix"));
-        //viewMatrix.init(gl, shader.getUniformLocation("u_viewMatrix"));
         cam.init(gl, shader.getUniformLocation("u_viewMatrix"));
         this.go = false;
         try {
-            
+            //inicializa uma das naves
             main_ship.getObj().getReady(gl, shader);
             main_ship.getObj().addPosition(1.2f, 5.5f, -3.0f);
             main_ship.getObj().addRotation(0, -90.0f, 0);
             
+            //inicializa a outra nave
             this.landingShip.getObj().getReady(gl, shader);
             this.landingShip.getObj().setPosition(2.5f,5.5f, -3.0f);
             this.landingShip.getObj().addRotation(0, 90.0f, 0);
             
-            
+            //inicializa a terra e a lua
             moon.getObj().getReady(gl, shader);
             moon.changePosition(2.0f, 4.0f, -3.0f);
-            //this.moon.getObj().addSize(-0.5f, -0.5f, -0.5f);
             earth.getObj().getReady(gl, shader);
             earth.changePosition(0.0f, 0.0f, -8.0f);
             earth.getObj().addRotation(0, 90, 0);
             this.earth.getObj().addSize(2, 2, 2);
+            //inicializa o missil(nao eh dado o draw nele)
             main_ship.getMissileObj().getReady(gl, shader);
             main_ship.getMissileObj().addPosition(1.36f, 5.48f, -3.29f);
             main_ship.getMissileObj().addRotation(0.0f, 180, 0.0f);
             
+            //inicia o asteroid principal
             asteroid.getObj().getReady(gl, shader);
             asteroid.getObj().addPosition(0.0f, 10.0f, 0.0f);
             asteroid.getObj().addSize(-0.5f, -0.5f, -0.5f);
             
+            //inicia a wave(seria uma esfera transparente que faria a camera girar , mas quem faz isso eh a terra)
+            //ela inicializa mas nao eh utilizado
             wave.init(gl, shader);
             
+            //cria todas as estrelas
             this.create_stars(gl);
 
         } catch (IOException ex) {
@@ -202,18 +193,22 @@ public class ObjectBeta implements GLEventListener {
         
         
         
-                //(2.5f,5.5f, -3.0f
+        /*
+            inicializa as particulas do missil atingindo a nave
+        */
         Vector location_m = new Vector(3); location_m.add(2.3f/2.0f); location_m.add(5.5f/2.0f); location_m.add(-3f/2.0f);
-        float swapingRate_m = 3;
+        float swapingRate_m = 3;//cada update cria 3 particulas
         int particleLifeTime_m = 40;
-        Vector gravity_m = new Vector(3); gravity_m.add(0.0f); gravity_m.add(-0.003f); gravity_m.add(0.0f);
-        Vector initialVelocity_m = new Vector(3); initialVelocity_m.add(0.0f); initialVelocity_m.add(1.0f); initialVelocity_m.add(0.0f);
+        Vector gravity_m = new Vector(3); gravity_m.add(0.0f); gravity_m.add(-0.003f); gravity_m.add(0.0f);//para onde as particulas caiem
+        Vector initialVelocity_m = new Vector(3); initialVelocity_m.add(0.0f); initialVelocity_m.add(1.0f); initialVelocity_m.add(0.0f);//velocidade das particulas
         float velocityModifier_m = 0.5f;
         this.fireMissile = new ParticleEmitter(location_m, swapingRate_m, particleLifeTime_m, gravity_m, initialVelocity_m, velocityModifier_m, modelMatrix,gl, shader);
-        this.fireMissile.setEspaceChange(0.8f, 0.8f, 0.8f);
+        this.fireMissile.setEspaceChange(0.8f, 0.8f, 0.8f);//comecam com 0.5 , deixa 0.8 pq ficou bom :)
 
         
-        
+        /*
+            inicia o sistema de particula da nave que vai embora
+        */
         Vector location_s = new Vector(3); location_s.add(1.2f/2.0f); location_s.add(5.52f/2.0f); location_s.add(-2.8f/2.0f);
         float swapingRate_s = 3;
         int particleLifeTime_s = 40;
@@ -223,7 +218,9 @@ public class ObjectBeta implements GLEventListener {
         this.fireSpaceShip = new ParticleEmitter(location_s, swapingRate_s, particleLifeTime_s, gravity_s, initialVelocity_s, velocityModifier_s, modelMatrix,gl, shader);
         
         
-        //create particles
+        /*
+            inicia o sistema de particula do asteroid caindo na terra
+        */
         Vector location_p = new Vector(3); location_p.add(0.0f); location_p.add(4.9f); location_p.add(-0.1f);
         float swapingRate = 6;
         int particleLifeTime = 50;
@@ -233,7 +230,11 @@ public class ObjectBeta implements GLEventListener {
         this.fireAsteroid = new ParticleEmitter(location_p, swapingRate, particleLifeTime, gravity_p, initialVelocity_p, velocityModifier, modelMatrix,gl, shader);
         this.fireAsteroid.setEspaceChange(0.1f, 0.1f, 0.1f);
         
-
+        /*
+            inicia o sistema de asteroid depois que a terra explode
+            cria so 50 asteroid e nunc asao deletados(a parte da funcao do update no Asteroid.java foi tirado)
+            o tempo de vida de particula nao importa
+        */
         Vector location_a = new Vector(3); location_a.add(0.0f); location_a.add(1f); location_a.add(-6f);
         float swapingRate_a = 50;
         int particleLifeTime_a = 50000;
@@ -242,9 +243,16 @@ public class ObjectBeta implements GLEventListener {
         float velocityModifier_a = 1f;
         this.earth_down = new AsteroidEmitter(location_a, swapingRate_a, particleLifeTime_a, gravity_a, initialVelocity_a, velocityModifier_a, modelMatrix, gl, shader,"./data/rock/Rock/Rock.obj" );
     
-    timer.init();
+        
+        /*
+            inicializa o tempo depois que TUDO ja foi inicializado
+        */
+        timer.init();
     }
     
+    /*
+        cria pontos aleatorios e deixa eles em uma distancia de 7 do ponto 0
+    */
     private void create_stars(GL3 gl){
         Random random = new Random();
 
@@ -255,7 +263,6 @@ public class ObjectBeta implements GLEventListener {
                 pointy = (random.nextFloat()-0.5f)*20;
                 pointz = (random.nextFloat()-0.5f)*20;
             }
-            //this.points_stars[i] = new Point(pointx, pointy, pointz, gl);
             this.points_stars[i] = new Point(pointx, pointy, pointz);
             this.points_stars[i].setPointSize(1.5f, gl);
             this.points_stars[i].init(gl, shader);
@@ -275,12 +282,16 @@ public class ObjectBeta implements GLEventListener {
         projectionMatrix.perspective(70.0f, 1f, 0.01f, 30.0f);
         projectionMatrix.bind();
         
+        //atualiza a posicao da camera
         cam.useView();
         light.bind();
+        
+        //vai pra parte da movimentacao do cenario
         this.playVideo();
-        System.out.println(this.timer.getDelta());
+        //ver se foi clicado alguma coisa e atualiza a camera(sim repete, nao sei se funfa sem o de cima, good luck)
         this.cameraUpdate();
-       
+        
+       //vai pra parte em que os objetos sao desenhados novamente
         this.sceneUpdate();
         
         gl.glFlush();
@@ -293,6 +304,7 @@ public class ObjectBeta implements GLEventListener {
     
     
     @Override
+    //nao tem todos objetos(moh preguica de ver agora)
     public void dispose(GLAutoDrawable glad) {
         moon.getObj().dispose();
         earth.getObj().dispose();
@@ -308,29 +320,24 @@ public class ObjectBeta implements GLEventListener {
     
 
     @Override
+    //ja tava assim quando cheguei
     public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
         
     }
     
     public void sceneUpdate(){
         
-       /*if(this.input.getSpaceBar() && main_ship.getMissileFlag()){
-            main_ship.toogleMissileFlag();
-        }*/
-        
-        //main_ship.shoot();
+        /*
+            atualiza cada estrela(se nao desenhar elas somem)
+        */
         for(int i=0;i<this.points_stars.length; i++){
-             //RED
-            /*material.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
-            material.setDiffuseColor(new float[]{1.0f, 0.0f, 0.0f, 1.0f});
-            material.setSpecularColor(new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-            material.setSpecularExponent(32);
-            material.bind();*/
             this.points_stars[i].draw(modelMatrix, false,material, true);
         }
         
         
-        
+        /*
+            atualiza a lua, faz ela se mover em 0.07 cada draw novo
+        */
         moon.getObj().addRotation(0.0f, 0.07f, 0.0f);
         modelMatrix.loadIdentity();
         modelMatrix.translate(moon.getObj().getPosition()[0], moon.getObj().getPosition()[1], moon.getObj().getPosition()[2]);
@@ -341,6 +348,12 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
         moon.getObj().draw();
         
+        
+        /*
+            atualiza a terra se ela ainda nao foi explodida)
+            gerando-a em 0.03 cada draw novo
+            stop_earth eh um booleano alterado em playVideo() na hora certa
+        */
         if(!this.stop_earth){
             earth.getObj().addRotation(0.0f, 0.03f, 0.0f);
             modelMatrix.loadIdentity();
@@ -353,6 +366,10 @@ public class ObjectBeta implements GLEventListener {
             earth.getObj().draw();
         }
         
+        /*
+            atualiza a  nave que vai embora
+            close_mainsgip modifica no playVideo() na hora certa
+        */
         if(!this.close_mainship){
             modelMatrix.loadIdentity();
             modelMatrix.translate(main_ship.getObj().getPosition()[0], main_ship.getObj().getPosition()[1], main_ship.getObj().getPosition()[2]);
@@ -363,11 +380,20 @@ public class ObjectBeta implements GLEventListener {
             modelMatrix.bind();
             main_ship.getObj().draw();
         }
+        
+        /*
+            start_fireSpaceShip eh modifica no playVideo na hora certa
+            inicializa o sistema de particulas da nave indo embora
+        */
         if(this.start_fireSpaceShip){
             this.fireSpaceShip.update();
             this.fireSpaceShip.draw(material, false);
         }
         
+        /*
+            some com a nave explodida(sendo q ela nao explode)
+            close_xwing vira true dentro do playVideo
+        */
         if(!this.close_xwing){
             modelMatrix.loadIdentity();
             modelMatrix.translate(main_ship.getMissileObj().getPosition()[0], main_ship.getMissileObj().getPosition()[1], main_ship.getMissileObj().getPosition()[2]);
@@ -389,6 +415,9 @@ public class ObjectBeta implements GLEventListener {
             this.landingShip.getObj().draw();
         }
         
+        /*
+            asteroid funciona constante e some quando o playVideo alterar o close_asteroid
+        */
         if(!this.close_asteroid){
             
             modelMatrix.loadIdentity();
@@ -401,21 +430,37 @@ public class ObjectBeta implements GLEventListener {
             this.asteroid.getObj().draw();
             
         }
+        
+        /*
+            inicializa o sistema de particula
+            start_fireAsteroid alterado no playVideo
+        */
         if(start_fireAsteroid){
             this.fireAsteroid.update();
             this.fireAsteroid.draw(material, false);
         }
-        
+        /*
+            inicializa o sistema de particula do missil
+        */
         if(start_fireMissile){
             this.fireMissile.update();
             this.fireMissile.draw(material, false);
         }
         
+        /*
+            quando a terra sumir entao o earth_down(sistema de particulas, varios ateroids) sao cirados
+        */
         if(start_earth_down){
             this.earth_down.update();
             this.earth_down.draw(material, false);
         }
         
+        /*
+            NUNCA VIRA TRUE
+            seria uma wave quando a terra explode e a wave cresce e faz a camera girar
+            na real nao foi usado por nao conseguir fazer a wave transparente
+            entao a terra que cresce e faz a camera girar
+        */
         if(start_wave){
             material.setAmbientColor(new float[]{0.0f, 0.0f, 0.0f, 0.3f});
             material.setDiffuseColor(new float[]{0.0f, 0.0f, 1.0f, 0.3f});
@@ -434,6 +479,9 @@ public class ObjectBeta implements GLEventListener {
         modelMatrix.bind();
     }
     
+    /*
+        Se pa nao eh usado
+    */
     public void userInput(){
     
          if(this.input.getDown()){
@@ -463,6 +511,9 @@ public class ObjectBeta implements GLEventListener {
         }
     }
     
+    /*
+        movimentacao da camera
+    */
     public void setKeyPressed(){
         float speed = 0.1f;
         float rotate = 1.5f;
@@ -488,6 +539,10 @@ public class ObjectBeta implements GLEventListener {
             cam.lookLeft(-rotate);
         }*/
     }
+    
+    /*
+        atualiza a camera 
+    */
     public void cameraUpdate(){
         this.input.update();
         this.setKeyPressed();
@@ -498,29 +553,32 @@ public class ObjectBeta implements GLEventListener {
         return this.input;
     }
     
+    /*
+        funcao que faz com que tenha um video enquando o programa funciona
+    */
     private void playVideo(){
         int current = this.timer.getDelta();
-        if(current > 39650){
+        if(current > 39650){//faz a camera girar ate parar e ja era
             this.close_asteroid = true;
             this.stop_earth = true;
             this.start_fireAsteroid = false;
             this.rollCam();
-        }else if(current > 39100){
+        }else if(current > 39100){//unica coisa que adicona eh a camera q comeca a girar
             this.start_earth_down = true;
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
             this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
-            //wave comeca a agir
+            //wave comeca a agir NEM VAI
             this.earth.getObj().addSize(0.35f, 0.35f, 0.35f);
             //this.start_wave = true;
             //this.wave.addSize(0.3f,0.3f,0.3f);
-            this.rollCam();
+            this.rollCam();//gira camera
         }else if(current > 38000){ // pedacos da terra sao soltos
             this.start_earth_down = true;
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
             this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
-            //wave comeca a agir
+            //wave comeca a agir NEM FUNCIONA
            // this.start_wave = true;
             this.earth.getObj().addSize(0.3f, 0.3f, 0.3f);
             //this.wave.addSize(0.3f,0.3f,0.3f);
@@ -530,7 +588,6 @@ public class ObjectBeta implements GLEventListener {
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
             this.start_fireAsteroid = true;
             this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
-            //this.close_xwing = true;
             this.close_mainship = true;
             this.start_fireSpaceShip = false;
         }else if(current > 18000){//nave vai embora
@@ -551,6 +608,7 @@ public class ObjectBeta implements GLEventListener {
         }
     }
     
+    //treme a camera antes da explosao
     private void shakeCam(){
         if(this.shakeLeft){
             cam.lookLeft(2f);
@@ -560,6 +618,7 @@ public class ObjectBeta implements GLEventListener {
         this.shakeLeft = !this.shakeLeft;
     }
     
+    //gira a camera com a explosao
     private void rollCam(){
         if(this.roll < 0){
             cam.lookDown(this.roll);

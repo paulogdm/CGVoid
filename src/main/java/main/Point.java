@@ -17,13 +17,14 @@ import javax.media.opengl.GL3;
 /**
  *
  * @author xima
+ * classe que cria um ponto
  */
 class Point extends SimpleModel {
         private int expireTime;
         private Vector position;
         private Vector velocity;
         
-        public Point(float x, float y, float z){//,GL3 gl){
+        public Point(float x, float y, float z){
             //this.gl = gl;
             this.position = new Vector(3);
             this.position.add(x);
@@ -35,6 +36,10 @@ class Point extends SimpleModel {
             
         }
         
+        /*
+            segundo construtor utilizado para quando criar pontos 
+            num sistema de particulas
+        */
         public Point(Vector position, Vector velocity, int expireTime){
             this.position = position;
             this.velocity = velocity;
@@ -53,17 +58,14 @@ class Point extends SimpleModel {
         
         public float getX(){
             return (float) this.position.get(0);
-            //return (float) this.x;
         }
         
         public float getY(){
             return (float) this.position.get(1);
-            //return (float) this.y;
         }
         
         public float getZ(){
             return (float) this.position.get(2);
-            //return (float) this.z;
         }
         
         public void setPointSize(float size, GL3 gl){
@@ -74,17 +76,20 @@ class Point extends SimpleModel {
             return expireTime == 0;
         }
         
-        //NAO FOI IMPLEMENTADO O UPDATE
-        
+        /*
+            adiciona uma nova posicao ao ponto dado a velocidade 
+            e a gravidade do sistema de particuals
+        */
         public void update(Vector gravity){
-            
-            //modelMatrix.translate((float)velocity.get(0), (float)velocity.get(1), (float)velocity.get(2));
-            //modelMatrix.translate((float)gravity.get(0), (float)gravity.get(1), (float)gravity.get(2));
             this.addPosition((float)velocity.get(0), (float)velocity.get(1), (float)velocity.get(2));
             this.addPosition((float)gravity.get(0), (float)gravity.get(1), (float)gravity.get(2));
             expireTime -=1;
         }
         
+        /*
+            se for particula entao o ponto se move
+            se nao nao precisa fazer o translate
+        */
         public void draw( Matrix4 modelMatrix, boolean isParticle, Material material, boolean isMaterial){
             modelMatrix.loadIdentity();
             if(isParticle)

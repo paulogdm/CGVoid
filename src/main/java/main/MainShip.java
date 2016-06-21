@@ -19,7 +19,6 @@ public class MainShip extends ObjectContainer{
     private Vector positions;
     
     public MainShip() {
-        //super("./data/feisar/Feisar_Ship_OBJ/Feisar_Ship.obj");
         super("./data/xwing/xwing.obj");
         this.getObj().setSize(0.25f, 0.25f, 0.25f);
         this.positions = new Vector(3);
@@ -27,7 +26,6 @@ public class MainShip extends ObjectContainer{
         this.positions.add(0.0f);
         this.positions.add(0.0f);
         this.getObj().setPosition((float) this.positions.elementAt(0), (float) this.positions.elementAt(1), (float) this.positions.elementAt(2));
-        //this.getObj().setPosition(1.0f, 1.0f, 1.0f);
         missile = new Missile();
         missile_is_inside = true;
     }
@@ -43,19 +41,6 @@ public class MainShip extends ObjectContainer{
     
     
     public void shoot(){
-       /* float position[] = this.missile.getObj().getPosition();
-        
-        if(position[2] > 5f){
-            this.missile.getObj().setPosition(this.getObj().getX(),
-                    this.getObj().getY(),
-                    this.getObj().getZ()+0.3f);
-            this.missile.getObj().setSpeed(0f, 0f, 0f);
-            this.missile_is_inside = true;
-        } else if (!missile_is_inside) {
-            this.missile.getObj().setSpeed(KEEP_VALUE, KEEP_VALUE, 0.1f);
-        }
-        
-        this.missile.getObj().updatePosition();*/
          if((float) this.missile.getObj().getX() < 2.5f ){
             this.missile.getObj().addPosition(this.getObj().getX()+0.1f, this.getObj().getY(), this.getObj().getZ());
             this.missile.getObj().setSpeed(0f, 0f, 0f);
@@ -87,9 +72,6 @@ public class MainShip extends ObjectContainer{
     }
     
     public void changePosition(float x,float y,float z){
-        /*this.positions.setElementAt(x, 0);
-        this.positions.setElementAt(y, 1);
-        this.positions.setElementAt(z, 2);*/
         this.getObj().setPosition(x, y, z);
     }
 }

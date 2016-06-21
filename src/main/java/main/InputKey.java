@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 /**
  *
  * @author paulogdm
+ * das keys possiveis retorna se for precionada ou nao
  */
 public class InputKey implements KeyListener {
     private final boolean[] keys = new boolean[120];  
