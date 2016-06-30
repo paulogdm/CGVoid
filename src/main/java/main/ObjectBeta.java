@@ -8,6 +8,7 @@ import br.usp.icmc.vicg.gl.util.Shader;
 import br.usp.icmc.vicg.gl.util.ShaderFactory;
 import br.usp.icmc.vicg.gl.model.Sphere;
 import static com.sun.java.accessibility.util.AWTEventMonitor.*;
+import java.io.File;
 import java.io.IOException;
 import static java.lang.Math.abs;
 import static java.lang.Math.cos;
@@ -23,6 +24,13 @@ import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
 import java.util.Random;
 import java.util.Vector;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import static java.lang.System.out;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 
 public class ObjectBeta implements GLEventListener {
     //bases para o sistema
@@ -74,6 +82,11 @@ public class ObjectBeta implements GLEventListener {
     private boolean start_wave;
     
     private boolean shakeLeft;
+
+    private Clip explosion_sound;
+    private Clip ship_sound;
+    private Clip shipdead_sound;
+    private Clip asteroid_sound;
     
     @SuppressWarnings("empty-statement")
     public ObjectBeta() {
@@ -94,9 +107,27 @@ public class ObjectBeta implements GLEventListener {
         points_stars = new Point[5000];//nao foi usado sistema de particulas para fazer as estrelas
         asteroid = new Asteroid("./data/rock/Rock/Rock.obj");
         
-        
+        try {
+            AudioInputStream audio1 = AudioSystem.getAudioInputStream(new File("./sounds/explosion.wav").getAbsoluteFile());
+            this.explosion_sound = AudioSystem.getClip();
+            this.explosion_sound.open(audio1);
+            
+            AudioInputStream audio2 = AudioSystem.getAudioInputStream(new File("./sounds/ship.wav").getAbsoluteFile());
+            this.ship_sound = AudioSystem.getClip();
+            this.ship_sound.open(audio2);
+            
+            AudioInputStream audio3 = AudioSystem.getAudioInputStream(new File("./sounds/ship_down.wav").getAbsoluteFile());
+            this.shipdead_sound = AudioSystem.getClip();
+            this.shipdead_sound.open(audio3);
+            
+            AudioInputStream audio4 = AudioSystem.getAudioInputStream(new File("./sounds/asteroid.wav").getAbsoluteFile());
+            this.asteroid_sound = AudioSystem.getClip();
+            this.asteroid_sound.open(audio4);
+        } catch (Exception e) {
+            System.out.println("play sound error: " + e.getMessage());
+        }
     
-        landingShip = new MainShip();
+        landingShip = new MainShip("./data/feisar/Feisar_Ship_OBJ/Feisar_Ship.obj");
         
         input = new InputKey();
         
@@ -133,6 +164,10 @@ public class ObjectBeta implements GLEventListener {
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClearDepth(1.0f);
         
+//        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL.GL_BLEND);
+//        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glEnable(GL.GL_CULL_FACE);
         
@@ -152,7 +187,7 @@ public class ObjectBeta implements GLEventListener {
             //inicializa a outra nave
             this.landingShip.getObj().getReady(gl, shader);
             this.landingShip.getObj().setPosition(2.5f,5.5f, -3.0f);
-            this.landingShip.getObj().addRotation(0, 90.0f, 0);
+            this.landingShip.getObj().addRotation(0, -90.0f, 0);
             
             //inicializa a terra e a lua
             moon.getObj().getReady(gl, shader);
@@ -259,9 +294,9 @@ public class ObjectBeta implements GLEventListener {
         for(int i=0; i < this.points_stars.length; i++){            
             float pointx=0.0f, pointy=0.0f, pointz=0.0f;
             while((pointx < 7.0f && pointx > -7.0f) && (pointy < 7.0f && pointy > -7.0f) && (pointz < 7.0f && pointz > -7.0f) ){
-                pointx = (random.nextFloat()-0.5f)*20;
-                pointy = (random.nextFloat()-0.5f)*20;
-                pointz = (random.nextFloat()-0.5f)*20;
+                pointx = (random.nextFloat()-0.5f)*50;
+                pointy = (random.nextFloat()-0.5f)*50;
+                pointz = (random.nextFloat()-0.5f)*50;
             }
             this.points_stars[i] = new Point(pointx, pointy, pointz);
             this.points_stars[i].setPointSize(1.5f, gl);
@@ -269,6 +304,13 @@ public class ObjectBeta implements GLEventListener {
         }
 
     }
+    
+    private void create_explosion(GL3 gl){
+        
+    }
+    
+    
+    
     @Override
     public void display(GLAutoDrawable glad) {
         GL3 gl = glad.getGL().getGL3();//pega gl3 pq pega todas as capacidades de mexer no shader
@@ -562,7 +604,7 @@ public class ObjectBeta implements GLEventListener {
             this.close_asteroid = true;
             this.stop_earth = true;
             this.start_fireAsteroid = false;
-            this.rollCam();
+            //this.rollCam();
         }else if(current > 39100){//unica coisa que adicona eh a camera q comeca a girar
             this.start_earth_down = true;
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
@@ -572,7 +614,7 @@ public class ObjectBeta implements GLEventListener {
             this.earth.getObj().addSize(0.35f, 0.35f, 0.35f);
             //this.start_wave = true;
             //this.wave.addSize(0.3f,0.3f,0.3f);
-            this.rollCam();//gira camera
+            //this.rollCam();//gira camera
         }else if(current > 38000){ // pedacos da terra sao soltos
             this.start_earth_down = true;
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
@@ -583,6 +625,8 @@ public class ObjectBeta implements GLEventListener {
             this.earth.getObj().addSize(0.3f, 0.3f, 0.3f);
             //this.wave.addSize(0.3f,0.3f,0.3f);
             this.shakeCam();
+            this.explosion_sound.start();
+            this.asteroid_sound.stop();
         }else if(current > 20000){//nave some, asteroid comeca a ir para a terra
             this.asteroid.getObj().addPosition(0.0f, -0.015f, -0.01f);
             this.asteroid.getObj().addRotation(0.4f, 0.7f, 0.6f);
@@ -590,15 +634,18 @@ public class ObjectBeta implements GLEventListener {
             this.fireAsteroid.setLocation(0.00f, -(0.015f/2.0f), -(0.01f/2.0f));
             this.close_mainship = true;
             this.start_fireSpaceShip = false;
+            this.asteroid_sound.start();
         }else if(current > 18000){//nave vai embora
             this.start_fireSpaceShip = true;
             this.main_ship.getObj().addPosition(0.0f, 0.0f, -0.2f);
             this.fireSpaceShip.setLocation(0.0f, 0.0f, -(0.2f/2.0f));
+            this.ship_sound.start();
         }else if(current > 15000){//nave rotaciona
             this.main_ship.getObj().addRotation(0f, 1f, 0f);
         }else if(current > 14000){//cancela a nave atingida, o missil e as faiscas
             this.close_xwing = true;
             this.start_fireMissile = false;
+            this.shipdead_sound.start();
         }else if(current > 12500){ //missel encosta na outra nave e sai faisca
             this.main_ship.getMissileObj().addPosition(0.01f, 0.0005f, 0f);
             this.fireMissile.setLocation(0.01f/2.0f, 0.0005f/2.0f, 0.0f);
